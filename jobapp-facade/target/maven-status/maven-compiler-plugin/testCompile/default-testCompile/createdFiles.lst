@@ -1,0 +1,6 @@
+com\mtripode\jobapp\facade\facade\PositionFacadeTest.class
+com\mtripode\jobapp\facade\facade\CandidateFacadeTest.class
+com\mtripode\jobapp\facade\facade\CompanyFacadeTest.class
+com\mtripode\jobapp\facade\facade\InterviewFacadeTest.class
+com\mtripode\jobapp\facade\facade\JobApplicationFacadeTest.class
+com\mtripode\jobapp\facade\facade\JobOfferFacadeTest.class
