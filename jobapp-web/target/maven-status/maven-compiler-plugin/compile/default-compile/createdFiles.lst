@@ -1,7 +1,0 @@
-com\mtripode\jobapp\controller\JobApplicationController.class
-com\mtripode\jobapp\web\JobappApplication.class
-com\mtripode\jobapp\controller\CandidateController.class
-com\mtripode\jobapp\controller\InterviewController.class
-com\mtripode\jobapp\controller\JobOfferController.class
-com\mtripode\jobapp\controller\PositionController.class
-com\mtripode\jobapp\controller\CompanyController.class
