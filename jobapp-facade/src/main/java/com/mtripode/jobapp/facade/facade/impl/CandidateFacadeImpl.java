@@ -10,6 +10,7 @@ import com.mtripode.jobapp.facade.dto.CandidateDto;
 import com.mtripode.jobapp.facade.facade.CandidateFacade;
 import com.mtripode.jobapp.facade.mapper.CandidateMapper;
 import com.mtripode.jobapp.service.model.Candidate;
+import com.mtripode.jobapp.service.model.ContactInfo;
 import com.mtripode.jobapp.service.service.CandidateService;
 
 /**
@@ -53,12 +54,13 @@ public class CandidateFacadeImpl implements CandidateFacade {
 
         // Update fields selectively
         existing.setFullName(candidateDto.getFullName());
-        if (existing.getContactInfo() != null) {
-            existing.getContactInfo().setEmail(candidateDto.getEmail());
-            existing.getContactInfo().setPhone(candidateDto.getPhone());
-            existing.getContactInfo().setLinkedIn(candidateDto.getLinkedIn());
-            existing.getContactInfo().setGithub(candidateDto.getGithub());
-        }
+        ContactInfo contactInfo = new ContactInfo();
+        contactInfo.setEmail(candidateDto.getEmail());
+        contactInfo.setPhone(candidateDto.getPhone());
+        contactInfo.setLinkedIn(candidateDto.getLinkedIn());
+        contactInfo.setGithub(candidateDto.getGithub());
+
+        existing.setContactInfo(contactInfo);
 
         Candidate updated = candidateService.saveCandidate(existing);
         return candidateMapper.toDto(updated);
