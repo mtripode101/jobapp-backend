@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.mtripode.jobapp.facade.facade.CandidateFacadeTest
--------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.668 s -- in com.mtripode.jobapp.facade.facade.CandidateFacadeTest
