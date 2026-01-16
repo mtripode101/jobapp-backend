@@ -27,4 +27,5 @@ public interface CandidateService {
     List<Candidate> findWithApplications();
 
     List<Candidate> findCandidatesWithMoreThan(int minApps);
+    
 }
