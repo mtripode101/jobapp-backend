@@ -21,8 +21,8 @@ public class Interview extends BaseEntity {
     private LocalDateTime scheduledAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private InterviewType type; // ONLINE, ONSITE, PHONE
+    @Column(name = "type", length = 50, nullable = false)
+    private InterviewType type;
 
     @Column(length = 1000)
     private String feedback;

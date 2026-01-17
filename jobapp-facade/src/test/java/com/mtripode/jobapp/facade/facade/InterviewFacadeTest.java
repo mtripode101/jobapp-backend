@@ -17,11 +17,13 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.mtripode.jobapp.facade.dto.InterviewDto;
-import com.mtripode.jobapp.facade.mapper.InterviewMapper;
 import com.mtripode.jobapp.facade.facade.impl.InterviewFacadeImpl;
+import com.mtripode.jobapp.facade.mapper.InterviewMapper;
 import com.mtripode.jobapp.service.model.Interview;
+import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.service.InterviewService;
-import com.mtripode.jobapp.service.model.Interview;
+import com.mtripode.jobapp.service.service.JobApplicationService;
+import com.mtripode.jobapp.service.service.JobOfferService;
 
 @ExtendWith(MockitoExtension.class)
 class InterviewFacadeTest {
@@ -29,13 +31,19 @@ class InterviewFacadeTest {
     @Mock
     private InterviewService interviewService;
 
+    @Mock
+    private JobApplicationService jobApplicationService;
+
+    @Mock
+    private JobOfferService jobOfferService;
+
     private InterviewMapper interviewMapper;
     private InterviewFacadeImpl interviewFacade;
 
     @BeforeEach
     void setUp() {
         interviewMapper = new InterviewMapper(); // real mapper instance
-        interviewFacade = new InterviewFacadeImpl(interviewService, interviewMapper);
+        interviewFacade = new InterviewFacadeImpl(interviewService, interviewMapper, jobApplicationService, jobOfferService);
     }
 
     private Interview buildInterview() {
@@ -49,6 +57,7 @@ class InterviewFacadeTest {
         InterviewDto dto = new InterviewDto();
         dto.setId(1L);
         dto.setScheduledAt(LocalDateTime.of(2026, 1, 10, 14, 0));
+        dto.setApplicationId(1L); // important: facade requires applicationId
         return dto;
     }
 
@@ -61,7 +70,6 @@ class InterviewFacadeTest {
         List<InterviewDto> results = interviewFacade.getAllInterviews();
 
         assertThat(results).hasSize(1);
-
         verify(interviewService, times(1)).findAll();
     }
 
@@ -83,12 +91,19 @@ class InterviewFacadeTest {
         Interview interview = buildInterview();
         InterviewDto dto = buildInterviewDto();
 
+        // Mock that JobApplication with id = 1 exists
+        JobApplication jobApp = new JobApplication();
+        jobApp.setId(1L);
+        when(jobApplicationService.findById(1L)).thenReturn(Optional.of(jobApp));
+
         when(interviewService.saveInterview(any(Interview.class))).thenReturn(interview);
 
         InterviewDto saved = interviewFacade.saveInterview(dto);
 
         assertThat(saved).isNotNull();
         verify(interviewService, times(1)).saveInterview(any(Interview.class));
+        // verify that facade asked jobApplicationService for the application
+        verify(jobApplicationService, times(1)).findById(1L);
     }
 
     @Test
