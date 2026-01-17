@@ -17,6 +17,7 @@ import com.mtripode.jobapp.service.model.Interview;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.service.InterviewService;
 import com.mtripode.jobapp.service.service.JobApplicationService;
+import com.mtripode.jobapp.service.service.JobOfferService;
 
 @Component
 public class InterviewFacadeImpl implements InterviewFacade {
@@ -26,13 +27,16 @@ public class InterviewFacadeImpl implements InterviewFacade {
     private final InterviewService interviewService;
     private final InterviewMapper interviewMapper;
     private final JobApplicationService jobApplicationService;
+    private final JobOfferService jobOfferService;
 
     public InterviewFacadeImpl(InterviewService interviewService,
                                InterviewMapper interviewMapper,
-                               JobApplicationService jobApplicationService) {
+                               JobApplicationService jobApplicationService,
+                               JobOfferService jobOfferService) {
         this.interviewService = interviewService;
         this.interviewMapper = interviewMapper;
         this.jobApplicationService = jobApplicationService;
+        this.jobOfferService = jobOfferService;
     }
 
     @Override
@@ -132,5 +136,31 @@ public class InterviewFacadeImpl implements InterviewFacade {
         logger.debug("saveInterview - mapeo a DTO de respuesta completado: {}", responseDto);
         logger.debug("saveInterview - fin");
         return responseDto;
+    }
+
+    @Override
+    @Transactional
+    public void acceptOffer(Long offerId) {
+        logger.debug("acceptOffer - inicio. offerId={}", offerId);
+        try {
+            jobOfferService.acceptOffer(offerId);
+            logger.info("acceptOffer - oferta aceptada correctamente offerId={}", offerId);
+        } catch (Exception ex) {
+            logger.error("acceptOffer - error al aceptar oferta offerId={}: {}", offerId, ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void rejectOffer(Long offerId) {
+        logger.debug("rejectOffer - inicio. offerId={}", offerId);
+        try {
+            jobOfferService.rejectOffer(offerId);
+            logger.info("rejectOffer - oferta rechazada correctamente offerId={}", offerId);
+        } catch (Exception ex) {
+            logger.error("rejectOffer - error al rechazar oferta offerId={}: {}", offerId, ex.getMessage(), ex);
+            throw ex;
+        }
     }
 }

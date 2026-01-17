@@ -18,4 +18,11 @@ public interface InterviewFacade {
 
     // Guardar o actualizar entrevista
     InterviewDto saveInterview(InterviewDto interviewDto);
+
+    // Marcar una oferta relacionada como aceptada (por id de oferta)
+    void acceptOffer(Long offerId);
+
+    // Marcar una oferta relacionada como rechazada (por id de oferta)
+    void rejectOffer(Long offerId);
+
 }

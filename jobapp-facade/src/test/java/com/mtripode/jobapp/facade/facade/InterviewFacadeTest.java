@@ -23,6 +23,7 @@ import com.mtripode.jobapp.service.model.Interview;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.service.InterviewService;
 import com.mtripode.jobapp.service.service.JobApplicationService;
+import com.mtripode.jobapp.service.service.JobOfferService;
 
 @ExtendWith(MockitoExtension.class)
 class InterviewFacadeTest {
@@ -33,13 +34,16 @@ class InterviewFacadeTest {
     @Mock
     private JobApplicationService jobApplicationService;
 
+    @Mock
+    private JobOfferService jobOfferService;
+
     private InterviewMapper interviewMapper;
     private InterviewFacadeImpl interviewFacade;
 
     @BeforeEach
     void setUp() {
         interviewMapper = new InterviewMapper(); // real mapper instance
-        interviewFacade = new InterviewFacadeImpl(interviewService, interviewMapper, jobApplicationService);
+        interviewFacade = new InterviewFacadeImpl(interviewService, interviewMapper, jobApplicationService, jobOfferService);
     }
 
     private Interview buildInterview() {
