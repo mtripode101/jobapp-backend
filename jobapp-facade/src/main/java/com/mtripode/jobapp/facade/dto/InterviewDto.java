@@ -12,6 +12,7 @@ public class InterviewDto extends BaseDto {
     private LocalDateTime scheduledAt;
     private InterviewType type;
     private String feedback;
+    private Long applicationId;
 
     public InterviewDto() {
         this.scheduledAt = null;
@@ -45,5 +46,14 @@ public class InterviewDto extends BaseDto {
     public String toString() {
         return "InterviewDto [scheduledAt=" + scheduledAt + ", type=" + type + ", feedback=" + feedback + "]";
     }
+
+    public Long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
+    }
+    
     
 }
