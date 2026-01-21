@@ -25,26 +25,29 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.debug
     image: jobapp-backend:local
     container_name: jobapp-backend
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/jobapp_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-      SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: "e12345678E"
+      SPRING_DATASOURCE_USERNAME: "jobapp"
+      SPRING_DATASOURCE_PASSWORD: "jobappPass123"
       SPRING_PROFILES_ACTIVE: "dev"
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
       - "8080:8080"
+      - "5005:5005"
     restart: on-failure
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./jobapp-web/target:/app/target
+      - ~/.m2:/root/.m2
     networks:
       - jobapp-net
 
