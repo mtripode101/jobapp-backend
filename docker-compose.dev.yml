@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: jobapp-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "e12345678E"
+      MYSQL_DATABASE: "jobapp_db"
+      MYSQL_USER: "jobapp"
+      MYSQL_PASSWORD: "jobappPass123"
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -pe12345678E || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+    networks:
+      - jobapp-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    image: jobapp-backend:local
+    container_name: jobapp-backend
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/jobapp_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      SPRING_DATASOURCE_USERNAME: "jobapp"
+      SPRING_DATASOURCE_PASSWORD: "jobappPass123"
+      SPRING_PROFILES_ACTIVE: "dev"
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./jobapp-web/target:/app/target
+      - ~/.m2:/root/.m2
+    networks:
+      - jobapp-net
+
+volumes:
+  db_data:
+
+networks:
+  jobapp-net:
+    driver: bridge

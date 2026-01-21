@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jobapp-mysql-pvc
+  labels:
+    app: jobapp-mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobapp-mysql
+  labels:
+    app: jobapp-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jobapp-mysql
+  template:
+    metadata:
+      labels:
+        app: jobapp-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jobapp-mysql-secrets
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              value: jobapp_db
+            - name: MYSQL_USER
+              value: jobapp_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jobapp-mysql-secrets
+                  key: mysql-user-password
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: jobapp-mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobapp-mysql
+  labels:
+    app: jobapp-mysql
+spec:
+  selector:
+    app: jobapp-mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP

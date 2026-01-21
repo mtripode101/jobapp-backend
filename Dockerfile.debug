@@ -1,0 +1,27 @@
+# Dockerfile.debug - multi-stage build + JDWP para desarrollo
+# Stage 1: build
+FROM maven:3.9.4-eclipse-temurin-21 AS build
+WORKDIR /workspace
+
+# Copiar metadata para cachear dependencias
+COPY pom.xml .
+COPY jobapp-service/pom.xml jobapp-service/
+COPY jobapp-facade/pom.xml jobapp-facade/
+COPY jobapp-web/pom.xml jobapp-web/
+
+RUN mvn -B -f pom.xml -T 1C dependency:go-offline
+
+# Copiar fuentes y compilar
+COPY . .
+RUN mvn -B -f pom.xml -T 1C -DskipTests package
+
+# Stage 2: runtime con JDWP
+FROM eclipse-temurin:21-jre-alpine
+ARG JAR_FILE=/workspace/jobapp-web/target/*-SNAPSHOT.jar
+COPY --from=build ${JAR_FILE} /app/app.jar
+
+EXPOSE 8080 5005
+ENV JAVA_OPTS="-Xms256m -Xmx512m -Djava.security.egd=file:/dev/./urandom"
+
+# JDWP: suspend=y hace que la JVM espere al depurador; cambiar a suspend=n para arrancar inmediatamente
+ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /app/app.jar"]
