@@ -13,17 +13,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and() // usa tu WebConfig para CORS
-            .csrf().disable() // desactiva CSRF para APIs REST
+            .cors().and()
+            .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/companies/**").permitAll() // permite acceso libre a /companies
-                .requestMatchers("/candidates/**").permitAll() // permite acceso libre a /candidates
-                .requestMatchers("/interview/**").permitAll() // permite acceso libre a /companies
-                .requestMatchers("/applications/**").permitAll() // permite acceso libre a /candidates
-                .requestMatchers("/job-offers/**").permitAll() // permite acceso libre a /companies
-                .requestMatchers("/positions/**").permitAll() // permite acceso libre a /candidates
-                .requestMatchers("/api/**").permitAll()       // permite acceso libre a tus endpoints REST
-                .anyRequest().authenticated()                 // el resto requiere autenticación
+                // Endpoints públicos de la API
+                .requestMatchers("/companies/**").permitAll()
+                .requestMatchers("/candidates/**").permitAll()
+                .requestMatchers("/interview/**").permitAll()
+                .requestMatchers("/applications/**").permitAll()
+                .requestMatchers("/job-offers/**").permitAll()
+                .requestMatchers("/positions/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
+
+                // Actuator: permitir health e info públicamente en dev
+                //.requestMatchers("/actuator/health", "/actuator/info").permitAll()
+
+                // Si quieres exponer todos los actuator en dev (menos recomendado en prod)
+                 .requestMatchers("/actuator/**").permitAll()
+
+                // El resto requiere autenticación
+                .anyRequest().authenticated()
             );
         return http.build();
     }
