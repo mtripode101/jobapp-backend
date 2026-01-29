@@ -2,6 +2,7 @@ package com.mtripode.jobapp.facade.facade.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     private final JobApplicationMapper jobApplicationMapper;
 
     public JobApplicationFacadeImpl(JobApplicationService jobApplicationService,
-                                    JobApplicationMapper jobApplicationMapper) {
+            JobApplicationMapper jobApplicationMapper) {
         this.jobApplicationService = jobApplicationService;
         this.jobApplicationMapper = jobApplicationMapper;
     }
@@ -64,6 +65,14 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
                 .stream()
                 .map(jobApplicationMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CompletableFuture<List<JobApplicationDto>> findAllAsync() {
+        return jobApplicationService.listAllAsync()
+                .thenApply(list -> list.stream()
+                .map(jobApplicationMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     @Override

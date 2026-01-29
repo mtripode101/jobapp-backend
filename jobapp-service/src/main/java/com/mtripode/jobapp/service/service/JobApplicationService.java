@@ -3,10 +3,11 @@ package com.mtripode.jobapp.service.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
-import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
+import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Position;
 import com.mtripode.jobapp.service.model.Status;
 
@@ -31,6 +32,8 @@ public interface JobApplicationService {
 
     // List all applications
     List<JobApplication> listAll();
+
+    CompletableFuture<List<JobApplication>> listAllAsync();
 
     // Additional query methods
     List<JobApplication> listByCompanyName(String companyName);

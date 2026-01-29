@@ -3,7 +3,9 @@ package com.mtripode.jobapp.service.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,6 +116,14 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Override
     public List<JobApplication> listAll() {
         return jobApplicationRepository.findAll();
+    }
+
+    // simple async wrapper that runs repository call in the configured executor
+    @Async("taskExecutor")
+    @Override
+    public CompletableFuture<List<JobApplication>> listAllAsync() {
+        List<JobApplication> result = jobApplicationRepository.findAll();
+        return CompletableFuture.completedFuture(result);
     }
 
     // --- Additional query methods merged from repository ---
