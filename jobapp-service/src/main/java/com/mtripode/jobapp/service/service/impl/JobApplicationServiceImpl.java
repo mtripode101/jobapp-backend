@@ -18,6 +18,9 @@ import com.mtripode.jobapp.service.repository.JobApplicationRepository;
 import com.mtripode.jobapp.service.service.JobApplicationService;
 import com.mtripode.jobapp.service.validators.StatusTransitionValidator;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+
 @Service
 @Transactional
 public class JobApplicationServiceImpl implements JobApplicationService {
@@ -26,6 +29,18 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository) {
         this.jobApplicationRepository = jobApplicationRepository;
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println("JobApplicationServiceImpl initialized");
+        // e.g., warm caches, validate config
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        System.out.println("JobApplicationServiceImpl shutting down");
+        // e.g., close resources
     }
 
     /**

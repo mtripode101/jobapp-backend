@@ -13,6 +13,7 @@ import com.mtripode.jobapp.facade.mapper.JobApplicationMapper;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Status;
 import com.mtripode.jobapp.service.service.JobApplicationService;
+import org.springframework.cache.annotation.Cacheable;
 
 @Component
 public class JobApplicationFacadeImpl implements JobApplicationFacade {
@@ -60,6 +61,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     }
 
     @Override
+    @Cacheable("jobs-applications")
     public List<JobApplicationDto> findAll() {
         return jobApplicationService.listAll()
                 .stream()
