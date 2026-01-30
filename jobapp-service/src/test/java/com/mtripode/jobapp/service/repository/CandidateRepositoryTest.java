@@ -94,7 +94,7 @@ class CandidateRepositoryTest {
         Position position = positionRepository.save(new Position("Backend Engineer", "Java role", "Remote", company));
 
         JobApplication app = new JobApplication("link", "website", LocalDate.now(),
-                "desc", candidate, company, position, Status.APPLIED);
+                "desc", candidate, company, position, Status.APPLIED, "JOB123");
 
         // Fix: maintain both sides of the relationship
         candidate.getApplications().add(app);
@@ -116,9 +116,9 @@ class CandidateRepositoryTest {
         Position position = positionRepository.save(new Position("Frontend Engineer", "React role", "Remote", company));
 
         JobApplication app1 = new JobApplication("link1", "website1", LocalDate.now(),
-                "desc1", candidate, company, position, Status.APPLIED);
+                "desc1", candidate, company, position, Status.APPLIED, "JOB123");
         JobApplication app2 = new JobApplication("link2", "website2", LocalDate.now(),
-                "desc2", candidate, company, position, Status.APPLIED);
+                "desc2", candidate, company, position, Status.APPLIED, "JOB456");
 
         // Fix: maintain both sides of the relationship
         candidate.getApplications().add(app1);

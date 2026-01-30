@@ -20,6 +20,9 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "job_application")
 public class JobApplication extends BaseEntity {
 
+    @Column(name = "job_id", nullable = false, unique = true, length = 100)
+    private String jobId;
+
     // Link to the job posting or source
     @Column(nullable = false)
     @NotBlank
@@ -72,7 +75,7 @@ public class JobApplication extends BaseEntity {
 
     public JobApplication(String sourceLink, String websiteSource, LocalDate dateApplied,
             String description, Candidate candidate, Company company,
-            Position position, Status status) {
+            Position position, Status status, String jobId) {
         this.sourceLink = sourceLink;
         this.websiteSource = websiteSource;
         this.dateApplied = dateApplied;
@@ -81,9 +84,18 @@ public class JobApplication extends BaseEntity {
         this.company = company;
         this.position = position;
         this.status = status;
+        this.jobId = jobId;
     }
 
     // Getters and setters
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
     public String getSourceLink() {
         return sourceLink;
     }

@@ -29,6 +29,7 @@ public class JobApplicationMapper {
         dto.setWebsiteSource(entity.getWebsiteSource());
         dto.setDescription(entity.getDescription());
         dto.setStatus(entity.getStatus() != null ? entity.getStatus().name() : null);
+        dto.setJobId(entity.getJobId());
 
         // Candidate mapping
         if (entity.getCandidate() != null) {
@@ -85,6 +86,7 @@ public class JobApplicationMapper {
         entity.setSourceLink(dto.getSourceLink());
         entity.setWebsiteSource(dto.getWebsiteSource());
         entity.setDescription(dto.getDescription());
+        entity.setJobId(dto.getJobId());
         if (dto.getStatus() != null) {
             entity.setStatus(Enum.valueOf(Status.class, dto.getStatus()));
         }

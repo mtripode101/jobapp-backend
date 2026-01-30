@@ -36,7 +36,8 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
                 entity.getDescription(),
                 entity.getCandidate(),
                 entity.getCompany(),
-                entity.getPosition()
+                entity.getPosition(),
+                entity.getJobId()
         );
         return jobApplicationMapper.toDto(saved);
     }
@@ -50,7 +51,8 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
                 entity.getDescription(),
                 entity.getCandidate(),
                 entity.getCompany(),
-                entity.getPosition()
+                entity.getPosition(),
+                entity.getJobId()
         );
         return jobApplicationMapper.toDto(saved);
     }

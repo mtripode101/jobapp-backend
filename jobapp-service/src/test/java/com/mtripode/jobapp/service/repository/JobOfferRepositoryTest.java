@@ -55,7 +55,7 @@ class JobApplicationRepositoryOfferTest {
 
         return jobApplicationRepository.save(
                 new JobApplication("link", "website", LocalDate.now(),
-                        "desc", candidate, company, position, Status.APPLIED)
+                        "desc", candidate, company, position, Status.APPLIED, "JOB-2")
         );
     }
 

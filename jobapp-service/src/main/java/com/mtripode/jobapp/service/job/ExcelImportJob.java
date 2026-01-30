@@ -131,7 +131,8 @@ public class ExcelImportJob {
                             candidate,
                             company,
                             position,
-                            status
+                            status,
+                            jobID
                     );
                     if (status == Status.REJECTED) {
                         application.setDateRejected(dateRejected != null ? dateRejected : LocalDate.now());

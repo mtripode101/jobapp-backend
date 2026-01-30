@@ -54,7 +54,7 @@ class InterviewRepositoryTest {
         Position position = positionRepository.save(new Position("Backend Engineer", "Java role", "Remote", company));
 
         JobApplication application = jobApplicationRepository.save(
-                new JobApplication("link", "website", LocalDate.now(), "desc", candidate, company, position, Status.APPLIED)
+                new JobApplication("link", "website", LocalDate.now(), "desc", candidate, company, position, Status.APPLIED, "JOB123")
         );
 
         return new Interview(scheduledAt, type, feedback, application);

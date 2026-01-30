@@ -45,6 +45,7 @@ class JobApplicationFacadeTest {
         jobApp.setWebsiteSource("LinkedIn");
         jobApp.setDescription("Backend Developer role");
         jobApp.setStatus(Status.APPLIED);
+        jobApp.setJobId("JOB-1");
         return jobApp;
     }
 
@@ -55,6 +56,7 @@ class JobApplicationFacadeTest {
         dto.setWebsiteSource("LinkedIn");
         dto.setDescription("Backend Developer role");
         dto.setStatus(Status.APPLIED.toString());
+        dto.setJobId("JOB-1");
         return dto;
     }
 
@@ -66,7 +68,7 @@ class JobApplicationFacadeTest {
 
         when(jobApplicationService.applyToJob(
                 anyString(), anyString(), anyString(),
-                any(), any(), any()
+                any(), any(), any(), anyString()
         )).thenReturn(jobApp);
 
         JobApplicationDto saved = jobApplicationFacade.applyToJob(dto);
@@ -74,7 +76,7 @@ class JobApplicationFacadeTest {
         assertThat(saved).isNotNull();
         assertThat(saved.getDescription()).isEqualTo("Backend Developer role");
         verify(jobApplicationService, times(1))
-                .applyToJob(anyString(), anyString(), anyString(), any(), any(), any());
+                .applyToJob(anyString(), anyString(), anyString(), any(), any(), any(), anyString());
     }
 
     @Test
@@ -85,7 +87,7 @@ class JobApplicationFacadeTest {
 
         when(jobApplicationService.applyRejected(
                 anyString(), anyString(), anyString(),
-                any(), any(), any()
+                any(), any(), any(), anyString()
         )).thenReturn(jobApp);
 
         JobApplicationDto saved = jobApplicationFacade.applyRejected(dto);
@@ -93,7 +95,7 @@ class JobApplicationFacadeTest {
         assertThat(saved).isNotNull();
         assertThat(saved.getStatus()).isEqualTo("APPLIED");
         verify(jobApplicationService, times(1))
-                .applyRejected(anyString(), anyString(), anyString(), any(), any(), any());
+                .applyRejected(anyString(), anyString(), anyString(), any(), any(), any(), anyString());
     }
 
     @Test
