@@ -29,8 +29,8 @@ public class ExcelImportController {
         if (StringUtils.isBlank(filePath)) {
             realFilePath.append("c://temp//jobapp.xlsx");
         }
-        else {
-            realFilePath.append(filePath);
+        else if (filePath.equalsIgnoreCase("default")) {
+            realFilePath.append("c://temp//jobapp.xlsx");
         }
         boolean result = excelImportFacade.processFile(realFilePath.toString());
         return ResponseEntity.ok(result);
