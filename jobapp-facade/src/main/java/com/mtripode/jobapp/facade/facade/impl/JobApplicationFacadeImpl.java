@@ -2,6 +2,7 @@ package com.mtripode.jobapp.facade.facade.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.mtripode.jobapp.facade.mapper.JobApplicationMapper;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Status;
 import com.mtripode.jobapp.service.service.JobApplicationService;
+import org.springframework.cache.annotation.Cacheable;
 
 @Component
 public class JobApplicationFacadeImpl implements JobApplicationFacade {
@@ -20,7 +22,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     private final JobApplicationMapper jobApplicationMapper;
 
     public JobApplicationFacadeImpl(JobApplicationService jobApplicationService,
-                                    JobApplicationMapper jobApplicationMapper) {
+            JobApplicationMapper jobApplicationMapper) {
         this.jobApplicationService = jobApplicationService;
         this.jobApplicationMapper = jobApplicationMapper;
     }
@@ -59,11 +61,20 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     }
 
     @Override
+    @Cacheable("jobs-applications")
     public List<JobApplicationDto> findAll() {
         return jobApplicationService.listAll()
                 .stream()
                 .map(jobApplicationMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CompletableFuture<List<JobApplicationDto>> findAllAsync() {
+        return jobApplicationService.listAllAsync()
+                .thenApply(list -> list.stream()
+                .map(jobApplicationMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     @Override

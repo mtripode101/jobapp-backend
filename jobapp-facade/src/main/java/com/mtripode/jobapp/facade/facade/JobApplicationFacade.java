@@ -2,6 +2,7 @@ package com.mtripode.jobapp.facade.facade;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 
@@ -18,6 +19,8 @@ public interface JobApplicationFacade {
 
     // Listar todas las aplicaciones
     List<JobApplicationDto> findAll();
+
+    CompletableFuture<List<JobApplicationDto>> findAllAsync();
 
     // Eliminar aplicación por ID
     void deleteById(Long id);

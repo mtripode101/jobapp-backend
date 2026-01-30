@@ -2,6 +2,7 @@ package com.mtripode.jobapp.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -49,6 +50,17 @@ public class JobApplicationController {
     @GetMapping
     public ResponseEntity<List<JobApplicationDto>> getAllApplications() {
         return ResponseEntity.ok(jobApplicationFacade.findAll());
+    }
+
+    @GetMapping("/findAll/async")
+    public CompletableFuture<ResponseEntity<List<JobApplicationDto>>> getAllApplicationsAsync() {
+        // If you implemented facade.findAllAsync()
+        return jobApplicationFacade.findAllAsync()
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> {
+                    // log if needed
+                    return ResponseEntity.status(500).build();
+                });
     }
 
     @DeleteMapping("/{id}")
