@@ -48,7 +48,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
      */
     @Override
     public JobApplication applyToJob(String sourceLink, String websiteSource, String description,
-            Candidate candidate, Company company, Position position) {
+            Candidate candidate, Company company, Position position, String jobId) {
         JobApplication application = new JobApplication(
                 sourceLink,
                 websiteSource,
@@ -57,7 +57,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 candidate,
                 company,
                 position,
-                Status.APPLIED
+                Status.APPLIED,
+                jobId
         );
         return jobApplicationRepository.save(application);
     }
@@ -102,7 +103,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
      */
     @Override
     public JobApplication applyRejected(String sourceLink, String websiteSource, String description,
-            Candidate candidate, Company company, Position position) {
+            Candidate candidate, Company company, Position position, String jobId) {
         JobApplication application = new JobApplication(
                 sourceLink,
                 websiteSource,
@@ -111,7 +112,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 candidate,
                 company,
                 position,
-                Status.REJECTED
+                Status.REJECTED,
+                jobId
         );
         application.setDateRejected(LocalDate.now());
         return jobApplicationRepository.save(application);
@@ -204,5 +206,10 @@ public class JobApplicationServiceImpl implements JobApplicationService {
             throw new IllegalArgumentException("Application not found with id " + id);
         }
         jobApplicationRepository.deleteById(id);
+    }
+
+    @Override
+    public JobApplication findByJobId(String jobId) {
+        return jobApplicationRepository.findByJobId(jobId);
     }
 }

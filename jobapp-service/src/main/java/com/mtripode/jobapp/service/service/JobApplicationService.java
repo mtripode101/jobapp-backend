@@ -15,7 +15,7 @@ public interface JobApplicationService {
 
     // Apply to a job with candidate, company, and position details
     JobApplication applyToJob(String sourceLink, String websiteSource, String description,
-            Candidate candidate, Company company, Position position);
+            Candidate candidate, Company company, Position position, String jobId);
 
     // Reject an existing application by ID
     JobApplication rejectApplication(Long id);
@@ -25,7 +25,7 @@ public interface JobApplicationService {
 
     // Create a rejected application directly
     JobApplication applyRejected(String sourceLink, String websiteSource, String description,
-            Candidate candidate, Company company, Position position);
+            Candidate candidate, Company company, Position position, String jobId);
 
     // List applications by status
     List<JobApplication> listByStatus(Status status);
@@ -59,4 +59,6 @@ public interface JobApplicationService {
 
     // Delete application by ID
     void deleteById(Long id);
+
+    JobApplication findByJobId(String jobId);
 }

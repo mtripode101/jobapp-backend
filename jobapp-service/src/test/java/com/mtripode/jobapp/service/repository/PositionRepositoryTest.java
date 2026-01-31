@@ -107,7 +107,8 @@ class PositionRepositoryTest {
                 candidate,
                 company,
                 position,
-                Status.APPLIED
+                Status.APPLIED,
+                "JOB123"
         );
 
         // mantener relación bidireccional

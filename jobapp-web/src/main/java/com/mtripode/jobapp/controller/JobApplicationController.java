@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +34,11 @@ public class JobApplicationController {
 
     @PostMapping
     public ResponseEntity<JobApplicationDto> createApplication(@RequestBody JobApplicationDto dto) {
+        if (jobApplicationFacade.findByJobId(dto.getJobId()) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(null); // o un DTO con mensaje de error
+        }
+
         return ResponseEntity.ok(jobApplicationFacade.applyToJob(dto));
     }
 
@@ -92,5 +98,15 @@ public class JobApplicationController {
     @GetMapping("/position")
     public ResponseEntity<List<JobApplicationDto>> getByPositionTitle(@RequestParam String title) {
         return ResponseEntity.ok(jobApplicationFacade.findByPositionTitle(title));
+    }
+
+    @GetMapping("/jobId/{jobId}")
+    public ResponseEntity<JobApplicationDto> getByJobId(@PathVariable String jobId) {
+        JobApplicationDto dto = jobApplicationFacade.findByJobId(jobId);
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

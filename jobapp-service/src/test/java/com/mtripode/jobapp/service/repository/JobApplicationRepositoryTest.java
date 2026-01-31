@@ -56,7 +56,7 @@ class JobApplicationRepositoryTest {
         );
 
         return new JobApplication("link", "website", LocalDate.now(),
-                "desc", candidate, company, position, status);
+                "desc", candidate, company, position, status, "JOB-1");
     }
 
     @Test

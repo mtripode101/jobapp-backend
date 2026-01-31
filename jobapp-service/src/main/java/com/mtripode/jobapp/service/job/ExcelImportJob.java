@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -97,7 +98,11 @@ public class ExcelImportJob {
 
                     LocalDate dateRejected = parseDate(row.getCell(6));
                     String jobID = safeGetString(row, 7); 
-
+                    JobApplication existingApp = jobApplicationRepository.findByJobId(jobID);
+                    if (Objects.nonNull(existingApp)) {
+                        logger.info("Job application with Job ID {} already exists. Skipping row {}.", jobID, i);
+                        continue;
+                    }
                     // Ensure company exists
                     Company company = companyRepository.findByName(
                             StringUtils.isEmpty(companyName) ? "Default" : companyName
@@ -123,6 +128,7 @@ public class ExcelImportJob {
                             new Position("Imported Position", description, "Remote", company)
                     );
 
+
                     JobApplication application = new JobApplication(
                             source,
                             link,
@@ -131,7 +137,8 @@ public class ExcelImportJob {
                             candidate,
                             company,
                             position,
-                            status
+                            status,
+                            jobID
                     );
                     if (status == Status.REJECTED) {
                         application.setDateRejected(dateRejected != null ? dateRejected : LocalDate.now());

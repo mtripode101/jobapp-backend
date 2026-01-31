@@ -63,4 +63,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     // Find applications with offers made before a given date
     List<JobApplication> findByOffers_OfferedAtBefore(LocalDate date);
+
+    // Find application by unique job ID
+    JobApplication findByJobId(String jobId);
 }

@@ -1,5 +1,6 @@
 package com.mtripode.jobapp.facade.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class JobApplicationDto extends BaseDto {
@@ -11,6 +12,8 @@ public class JobApplicationDto extends BaseDto {
     private CompanyDto company;
     private PositionDto position;
     private String status; // APPLIED, REJECTED, INTERVIEW, OFFERED
+    private String jobId;
+    private LocalDate  dateApplied;
 
     public JobApplicationDto() {
     }
@@ -18,7 +21,7 @@ public class JobApplicationDto extends BaseDto {
     public JobApplicationDto(Long id, LocalDateTime createdAt, LocalDateTime updatedAt,
             String sourceLink, String websiteSource, String description,
             CandidateDto candidate, CompanyDto company, PositionDto position,
-            String status) {
+            String status, String jobId, LocalDate  dateApplied) {
         this.setId(id);
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
@@ -29,6 +32,8 @@ public class JobApplicationDto extends BaseDto {
         this.company = company;
         this.position = position;
         this.status = status;
+        this.dateApplied = dateApplied;
+        this.jobId = jobId;
     }
 
     // Getters y setters
@@ -86,5 +91,21 @@ public class JobApplicationDto extends BaseDto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public LocalDate  getDateApplied() {
+        return dateApplied;
+    }
+
+    public void setDateApplied(LocalDate  dateApplied) {
+        this.dateApplied = dateApplied;
     }
 }
