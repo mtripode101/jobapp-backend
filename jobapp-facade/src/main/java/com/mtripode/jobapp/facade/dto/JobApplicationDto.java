@@ -1,9 +1,10 @@
 package com.mtripode.jobapp.facade.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class JobApplicationDto extends BaseDto {
+public class JobApplicationDto extends BaseDto implements Serializable {
 
     private String sourceLink;
     private String websiteSource;
@@ -14,6 +15,7 @@ public class JobApplicationDto extends BaseDto {
     private String status; // APPLIED, REJECTED, INTERVIEW, OFFERED
     private String jobId;
     private LocalDate  dateApplied;
+    private static final long serialVersionUID = 1L;
 
     public JobApplicationDto() {
     }

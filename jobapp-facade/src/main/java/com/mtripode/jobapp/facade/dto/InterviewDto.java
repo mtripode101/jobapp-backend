@@ -1,5 +1,6 @@
 package com.mtripode.jobapp.facade.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.mtripode.jobapp.service.model.InterviewType;
@@ -7,12 +8,13 @@ import com.mtripode.jobapp.service.model.InterviewType;
 /**
  * DTO for creating, updating, and returning Interview objects.
  */
-public class InterviewDto extends BaseDto {
+public class InterviewDto extends BaseDto implements Serializable {
 
     private LocalDateTime scheduledAt;
     private InterviewType type;
     private String feedback;
     private Long applicationId;
+    private static final long serialVersionUID = 1L;
 
     public InterviewDto() {
         this.scheduledAt = null;

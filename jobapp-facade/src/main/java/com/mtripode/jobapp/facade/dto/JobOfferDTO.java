@@ -1,12 +1,14 @@
 package com.mtripode.jobapp.facade.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.mtripode.jobapp.service.model.JobOfferStatus;
 
 
-public class JobOfferDTO extends BaseDto {
+public class JobOfferDTO extends BaseDto implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private LocalDate offeredAt;
     private JobOfferStatus status;
     private Long applicationId;

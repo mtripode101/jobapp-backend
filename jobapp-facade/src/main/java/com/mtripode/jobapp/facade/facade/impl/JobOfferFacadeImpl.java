@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.mtripode.jobapp.facade.dto.JobOfferDTO;
@@ -23,6 +25,7 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
+    @Cacheable(value = "job-offers", key = "'all'")
     public List<JobOfferDTO> getAllOffers() {
         return jobOfferService.findAll()
                 .stream()
@@ -31,26 +34,31 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
+    @Cacheable(value = "job-offers", key = "#id")
     public Optional<JobOfferDTO> getOfferById(Long id) {
         return jobOfferService.findById(id).map(JobOfferMapper::toDTO);
     }
 
     @Override
+    @CacheEvict(value = "job-offers", allEntries = true)
     public JobOfferDTO createOffer(Long applicationId, LocalDate offeredAt, JobOfferStatus status) {
         return JobOfferMapper.toDTO(jobOfferService.createOffer(applicationId, offeredAt, status));
     }
 
     @Override
+    @CacheEvict(value = "job-offers", key = "#dto.id")
     public JobOfferDTO updateOffer(JobOfferDTO dto) {
         return JobOfferMapper.toDTO(jobOfferService.saveJobOffer(JobOfferMapper.toEntity(dto)));
     }
 
     @Override
+    @CacheEvict(value = "job-offers", key = "#id")
     public void deleteOffer(Long id) {
         jobOfferService.deleteById(id);
     }
 
     @Override
+    @Cacheable(value = "job-offers", key = "'status:' + #status")
     public List<JobOfferDTO> getOffersByStatus(JobOfferStatus status) {
         return jobOfferService.findByStatus(status)
                 .stream()
@@ -59,11 +67,13 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
+    @CacheEvict(value = "job-offers", key = "#id")
     public JobOfferDTO acceptOffer(Long id) {
         return JobOfferMapper.toDTO(jobOfferService.acceptOffer(id));
     }
 
     @Override
+    @CacheEvict(value = "job-offers", key = "#id")
     public JobOfferDTO rejectOffer(Long id) {
         return JobOfferMapper.toDTO(jobOfferService.rejectOffer(id));
     }
