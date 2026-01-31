@@ -39,4 +39,7 @@ public interface JobApplicationFacade {
 
     // Buscar aplicaciones por título de posición
     List<JobApplicationDto> findByPositionTitle(String title);
+
+    // Buscar aplicación por Job ID
+    JobApplicationDto findByJobId(String jobId);
 }
