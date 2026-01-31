@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -58,6 +62,15 @@ public class JobApplicationController {
         return ResponseEntity.ok(jobApplicationFacade.findAll());
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Page<JobApplicationDto>> getAllApplicationsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(jobApplicationFacade.findAll(pageable));
+    }
+
     @GetMapping("/findAll/async")
     public CompletableFuture<ResponseEntity<List<JobApplicationDto>>> getAllApplicationsAsync() {
         // If you implemented facade.findAllAsync()
@@ -70,38 +83,45 @@ public class JobApplicationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteApplication(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteApplication(@PathVariable Long id
+    ) {
         jobApplicationFacade.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<JobApplicationDto> updateStatus(@PathVariable Long id, @RequestParam String newStatus) {
+    public ResponseEntity<JobApplicationDto> updateStatus(@PathVariable Long id, @RequestParam String newStatus
+    ) {
         return ResponseEntity.ok(jobApplicationFacade.updateStatus(id, newStatus));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<JobApplicationDto>> getByStatus(@PathVariable String status) {
+    public ResponseEntity<List<JobApplicationDto>> getByStatus(@PathVariable String status
+    ) {
         return ResponseEntity.ok(jobApplicationFacade.findByStatus(status));
     }
 
     @GetMapping("/company")
-    public ResponseEntity<List<JobApplicationDto>> getByCompanyName(@RequestParam String name) {
+    public ResponseEntity<List<JobApplicationDto>> getByCompanyName(@RequestParam String name
+    ) {
         return ResponseEntity.ok(jobApplicationFacade.findByCompanyName(name));
     }
 
     @GetMapping("/candidate")
-    public ResponseEntity<List<JobApplicationDto>> getByCandidateFullName(@RequestParam String fullName) {
+    public ResponseEntity<List<JobApplicationDto>> getByCandidateFullName(@RequestParam String fullName
+    ) {
         return ResponseEntity.ok(jobApplicationFacade.findByCandidateFullName(fullName));
     }
 
     @GetMapping("/position")
-    public ResponseEntity<List<JobApplicationDto>> getByPositionTitle(@RequestParam String title) {
+    public ResponseEntity<List<JobApplicationDto>> getByPositionTitle(@RequestParam String title
+    ) {
         return ResponseEntity.ok(jobApplicationFacade.findByPositionTitle(title));
     }
 
     @GetMapping("/jobId/{jobId}")
-    public ResponseEntity<JobApplicationDto> getByJobId(@PathVariable String jobId) {
+    public ResponseEntity<JobApplicationDto> getByJobId(@PathVariable String jobId
+    ) {
         JobApplicationDto dto = jobApplicationFacade.findByJobId(jobId);
         if (dto != null) {
             return ResponseEntity.ok(dto);

@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 
 public interface JobApplicationFacade {
@@ -42,4 +45,6 @@ public interface JobApplicationFacade {
 
     // Buscar aplicación por Job ID
     JobApplicationDto findByJobId(String jobId);
+
+    Page<JobApplicationDto> findAll(Pageable pageable);
 }

@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Position;
 import com.mtripode.jobapp.service.model.Status;
+
 
 public interface JobApplicationService {
 
@@ -61,4 +65,6 @@ public interface JobApplicationService {
     void deleteById(Long id);
 
     JobApplication findByJobId(String jobId);
+
+    Page<JobApplication> listAll(Pageable pageable);
 }

@@ -132,4 +132,10 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
         JobApplication application = jobApplicationService.findByJobId(jobId);
         return jobApplicationMapper.toDto(application);
     }
+
+    @Override
+    public org.springframework.data.domain.Page<JobApplicationDto> findAll(org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<JobApplication> page = jobApplicationService.listAll(pageable);
+        return page.map(jobApplicationMapper::toDto);
+    }
 }

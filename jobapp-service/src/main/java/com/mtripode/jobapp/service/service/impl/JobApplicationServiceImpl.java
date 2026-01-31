@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -211,5 +213,10 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Override
     public JobApplication findByJobId(String jobId) {
         return jobApplicationRepository.findByJobId(jobId);
+    }
+
+    @Override
+    public Page<JobApplication> listAll(Pageable pageable) {
+        return jobApplicationRepository.findAll(pageable);
     }
 }
