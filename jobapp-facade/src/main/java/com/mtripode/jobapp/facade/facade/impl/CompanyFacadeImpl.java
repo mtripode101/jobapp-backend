@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.mtripode.jobapp.facade.dto.CompanyDto;
@@ -24,6 +26,7 @@ public class CompanyFacadeImpl implements CompanyFacade {
     }
 
     @Override
+    @Cacheable(value = "companies", key = "'all'")
     public List<CompanyDto> getAllCompanies() {
         return companyService.getAllCompanies()
                 .stream()
@@ -32,12 +35,14 @@ public class CompanyFacadeImpl implements CompanyFacade {
     }
 
     @Override
+    @Cacheable(value = "companies", key = "#id")
     public Optional<CompanyDto> getCompanyById(Long id) {
         return companyService.getCompanyById(id)
                 .map(companyMapper::toDto);
     }
 
     @Override
+    @CacheEvict(value = "companies", key = "#dto.id", allEntries = true)
     public CompanyDto saveCompany(CompanyDto dto) {
         Company company = companyMapper.toEntity(dto);
         Company saved = companyService.saveCompany(company);
@@ -45,6 +50,7 @@ public class CompanyFacadeImpl implements CompanyFacade {
     }
 
     @Override
+    @CacheEvict(value = "companies", key = "#id", allEntries = true)
     public void deleteCompany(Long id) {
         companyService.deleteCompany(id);
     }

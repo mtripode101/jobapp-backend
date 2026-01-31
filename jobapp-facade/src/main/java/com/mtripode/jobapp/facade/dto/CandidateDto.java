@@ -1,15 +1,18 @@
 package com.mtripode.jobapp.facade.dto;
 
+import java.io.Serializable;
+
 /**
  * DTO for creating, updating, and returning Candidate objects.
  */
-public class CandidateDto extends BaseDto {
+public class CandidateDto extends BaseDto implements Serializable {
 
     private String fullName;
     private String email;
     private String phone;
     private String linkedIn;
     private String github;
+    private static final long serialVersionUID = 1L;
 
     // --- Constructors ---
     public CandidateDto() {

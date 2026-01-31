@@ -1,14 +1,16 @@
 package com.mtripode.jobapp.facade.dto;
 
+import java.io.Serializable;
+
 /**
  * DTO for creating, updating, and returning Company objects.
  */
-public class CompanyDto extends BaseDto {
+public class CompanyDto extends BaseDto implements Serializable {
 
     private String name;
     private String website;
     private String description;
-
+    private static final long serialVersionUID = 1L;
     // --- Constructors ---
     public CompanyDto() {
     }

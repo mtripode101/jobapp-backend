@@ -1,11 +1,14 @@
 package com.mtripode.jobapp.facade.dto;
 
-public class PositionDto extends BaseDto {
+import java.io.Serializable;
+
+public class PositionDto extends BaseDto implements Serializable {
 
     private String title;
     private String location;
     private String description;
     private String companyName; // simplificado para exponer solo el nombre de la empresa
+    private static final long serialVersionUID = 1L;
 
     public PositionDto() {
     }
