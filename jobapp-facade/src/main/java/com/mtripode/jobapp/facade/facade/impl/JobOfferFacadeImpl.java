@@ -77,4 +77,93 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     public JobOfferDTO rejectOffer(Long id) {
         return JobOfferMapper.toDTO(jobOfferService.rejectOffer(id));
     }
+
+    @Override
+    public List<JobOfferDTO> findByExpectedSalaryGreaterThan(Double salary){
+        return jobOfferService.findByExpectedSalaryGreaterThan(salary)
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<JobOfferDTO> findByOfferedSalaryLessThan(Double salary) {
+        return jobOfferService.findByOfferedSalaryLessThan(salary)
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    public  List<JobOfferDTO> findByExpectedSalaryBetween(Double minSalary, Double maxSalary) {
+        return jobOfferService.findByExpectedSalaryBetween(minSalary, maxSalary)
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList());                    
+    }
+
+    @Override
+    public List<JobOfferDTO> findByOfferedSalaryBetween(Double minSalary, Double maxSalary){
+         return jobOfferService.findByOfferedSalaryBetween(minSalary, maxSalary)
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList());       
+    }
+
+    @Override
+    public List<JobOfferDTO> findByExpectedSalaryIsNull(){
+        return jobOfferService.findByExpectedSalaryIsNull()
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<JobOfferDTO> findByOfferedSalaryIsNull(){
+        return jobOfferService.findByOfferedSalaryIsNull()
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList());        
+    }
+
+    @Override
+    public List<JobOfferDTO> findByExpectedSalaryIsNotNull(){
+        return jobOfferService.findByExpectedSalaryIsNotNull()
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList()); 
+    }
+
+    @Override
+    public List<JobOfferDTO> findByOfferedSalaryIsNotNull(){
+        return jobOfferService.findByOfferedSalaryIsNotNull()
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList()); 
+    }
+
+    @Override
+    public List<JobOfferDTO> findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(Double expectedMin, Double offeredMax){
+        return jobOfferService.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(expectedMin, offeredMax)
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList()); 
+    }
+
+    @Override
+    public List<JobOfferDTO> findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(Double expectedMax, Double offeredMin){
+        return jobOfferService.findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(expectedMax, offeredMin)
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList()); 
+    }
+
+    @Override
+    public List<JobOfferDTO> findByExpectedSalaryEqualsOfferedSalary(){
+        return jobOfferService.findByExpectedSalaryEqualsOfferedSalary()
+                                .stream()
+                                .map(JobOfferMapper::toDTO)
+                                .collect(Collectors.toList()); 
+    }
+
 }

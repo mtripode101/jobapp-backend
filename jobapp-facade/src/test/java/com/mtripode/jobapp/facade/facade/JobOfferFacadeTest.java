@@ -52,6 +52,17 @@ class JobOfferFacadeTest {
         return offer;
     }
 
+    private JobOffer buildJobOffer(Double expected, Double offered, JobOfferStatus status) {
+        JobOffer offer = new JobOffer();
+        offer.setId(1L);
+        offer.setApplication(buildJobApplication());
+        offer.setOfferedAt(LocalDate.of(2026, 1, 10));
+        offer.setStatus(status);
+        offer.setExpectedSalary(expected);
+        offer.setOfferedSalary(offered);
+        return offer;
+    }
+
     private JobOfferDTO buildJobOfferDto() {
         JobOfferDTO dto = new JobOfferDTO();
         dto.setId(1L);
@@ -169,4 +180,114 @@ class JobOfferFacadeTest {
         assertThat(result.getApplicationId()).isEqualTo(100L);
         verify(jobOfferService, times(1)).rejectOffer(1L);
     }
+
+    @Test
+    @DisplayName("Find offers with expected salary between range")
+    void testFindByExpectedSalaryBetween() {
+        when(jobOfferService.findByExpectedSalaryBetween(4000.0, 6000.0))
+                .thenReturn(List.of(buildJobOffer(5000.0, 3500.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByExpectedSalaryBetween(4000.0, 6000.0);
+
+        assertThat(results.get(0).getExpectedSalary()).isBetween(4000.0, 6000.0);
+        verify(jobOfferService).findByExpectedSalaryBetween(4000.0, 6000.0);
+    }
+
+    @Test
+    @DisplayName("Find offers with offered salary between range")
+    void testFindByOfferedSalaryBetween() {
+        when(jobOfferService.findByOfferedSalaryBetween(2000.0, 4000.0))
+                .thenReturn(List.of(buildJobOffer(4500.0, 3000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByOfferedSalaryBetween(2000.0, 4000.0);
+
+        assertThat(results.get(0).getOfferedSalary()).isBetween(2000.0, 4000.0);
+        verify(jobOfferService).findByOfferedSalaryBetween(2000.0, 4000.0);
+    }
+
+    @Test
+    @DisplayName("Find offers with expected salary null")
+    void testFindByExpectedSalaryIsNull() {
+        when(jobOfferService.findByExpectedSalaryIsNull())
+                .thenReturn(List.of(buildJobOffer(null, 3000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByExpectedSalaryIsNull();
+
+        assertThat(results.get(0).getExpectedSalary()).isNull();
+        verify(jobOfferService).findByExpectedSalaryIsNull();
+    }
+
+    @Test
+    @DisplayName("Find offers with offered salary null")
+    void testFindByOfferedSalaryIsNull() {
+        when(jobOfferService.findByOfferedSalaryIsNull())
+                .thenReturn(List.of(buildJobOffer(5000.0, null, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByOfferedSalaryIsNull();
+
+        assertThat(results.get(0).getOfferedSalary()).isNull();
+        verify(jobOfferService).findByOfferedSalaryIsNull();
+    }
+
+    @Test
+    @DisplayName("Find offers with expected salary not null")
+    void testFindByExpectedSalaryIsNotNull() {
+        when(jobOfferService.findByExpectedSalaryIsNotNull())
+                .thenReturn(List.of(buildJobOffer(5000.0, 3000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByExpectedSalaryIsNotNull();
+
+        assertThat(results.get(0).getExpectedSalary()).isNotNull();
+        verify(jobOfferService).findByExpectedSalaryIsNotNull();
+    }
+
+    @Test
+    @DisplayName("Find offers with offered salary not null")
+    void testFindByOfferedSalaryIsNotNull() {
+        when(jobOfferService.findByOfferedSalaryIsNotNull())
+                .thenReturn(List.of(buildJobOffer(5000.0, 3000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByOfferedSalaryIsNotNull();
+
+        assertThat(results.get(0).getOfferedSalary()).isNotNull();
+        verify(jobOfferService).findByOfferedSalaryIsNotNull();
+    }
+
+    @Test
+    @DisplayName("Find offers with expected salary greater than and offered salary less than")
+    void testFindByExpectedSalaryGreaterThanAndOfferedSalaryLessThan() {
+        when(jobOfferService.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(4000.0, 3500.0))
+                .thenReturn(List.of(buildJobOffer(5000.0, 3000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(4000.0, 3500.0);
+
+        assertThat(results.get(0).getExpectedSalary()).isGreaterThan(4000.0);
+        assertThat(results.get(0).getOfferedSalary()).isLessThan(3500.0);
+        verify(jobOfferService).findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(4000.0, 3500.0);
+    }
+
+    @Test
+    @DisplayName("Find offers with expected salary less than and offered salary greater than")
+    void testFindByExpectedSalaryLessThanAndOfferedSalaryGreaterThan() {
+        when(jobOfferService.findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(6000.0, 2000.0))
+                .thenReturn(List.of(buildJobOffer(5000.0, 3000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(6000.0, 2000.0);
+
+        assertThat(results.get(0).getExpectedSalary()).isLessThan(6000.0);
+        assertThat(results.get(0).getOfferedSalary()).isGreaterThan(2000.0);
+        verify(jobOfferService).findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(6000.0, 2000.0);
+    }
+
+    @Test
+    @DisplayName("Find offers with expected salary equals offered salary")
+    void testFindByExpectedSalaryEqualsOfferedSalary() {
+        when(jobOfferService.findByExpectedSalaryEqualsOfferedSalary())
+                .thenReturn(List.of(buildJobOffer(4000.0, 4000.0, JobOfferStatus.PENDING)));
+
+        List<JobOfferDTO> results = jobOfferFacade.findByExpectedSalaryEqualsOfferedSalary();
+
+        assertThat(results.get(0).getExpectedSalary()).isEqualTo(results.get(0).getOfferedSalary());
+        verify(jobOfferService).findByExpectedSalaryEqualsOfferedSalary();
+    }    
 }

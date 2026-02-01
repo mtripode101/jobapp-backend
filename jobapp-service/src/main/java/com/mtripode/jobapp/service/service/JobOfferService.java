@@ -3,6 +3,7 @@ package com.mtripode.jobapp.service.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.JobOfferStatus;
 
@@ -40,4 +41,27 @@ public interface JobOfferService {
 
     // Reject an offer
     JobOffer rejectOffer(Long offerId);
+
+    List<JobOffer> findByExpectedSalaryGreaterThan(Double salary);
+
+    List<JobOffer> findByOfferedSalaryLessThan(Double salary);
+
+    List<JobOffer> findByExpectedSalaryBetween(Double minSalary, Double maxSalary);
+
+    List<JobOffer> findByOfferedSalaryBetween(Double minSalary, Double maxSalary);
+
+    List<JobOffer> findByExpectedSalaryIsNull();
+
+    List<JobOffer> findByOfferedSalaryIsNull();
+
+    List<JobOffer> findByExpectedSalaryIsNotNull();
+
+    List<JobOffer> findByOfferedSalaryIsNotNull();
+
+    List<JobOffer> findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(Double expectedMin, Double offeredMax);
+
+    List<JobOffer> findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(Double expectedMax, Double offeredMin);
+
+    List<JobOffer> findByExpectedSalaryEqualsOfferedSalary();
+
 }

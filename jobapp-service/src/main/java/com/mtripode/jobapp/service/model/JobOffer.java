@@ -29,6 +29,10 @@ public class JobOffer extends BaseEntity {
     @JoinColumn(name = "application_id", nullable = false)
     private JobApplication application;
 
+    private Double expectedSalary;
+
+    private Double offeredSalary;
+
     // Constructors
     public JobOffer() {
     }
@@ -37,9 +41,28 @@ public class JobOffer extends BaseEntity {
         this.offeredAt = offeredAt;
         this.status = status;
         this.application = application;
+        this.expectedSalary = 0.0;
+        this.offeredSalary = 0.0;
     }
 
     // Getters and setters
+
+    public Double getExpectedSalary() {
+        return expectedSalary;
+    }
+
+    public void setExpectedSalary(Double excpectedSalary) {
+        this.expectedSalary = excpectedSalary;
+    }
+
+    public Double getOfferedSalary() {
+        return offeredSalary;
+    }
+
+    public void setOfferedSalary(Double offeredSalary) {
+        this.offeredSalary = offeredSalary;
+    }
+    
     public LocalDate getOfferedAt() {
         return offeredAt;
     }

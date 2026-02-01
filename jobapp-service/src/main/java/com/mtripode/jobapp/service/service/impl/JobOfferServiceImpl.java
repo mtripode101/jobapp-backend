@@ -12,8 +12,6 @@ import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.JobOfferStatus;
 import com.mtripode.jobapp.service.repository.JobApplicationRepository;
 import com.mtripode.jobapp.service.repository.JobOfferRepository;
-import com.mtripode.jobapp.service.model.JobOffer;
-import com.mtripode.jobapp.service.model.JobOfferStatus;
 import com.mtripode.jobapp.service.service.JobOfferService;
 
 @Service
@@ -107,5 +105,67 @@ public class JobOfferServiceImpl implements JobOfferService {
                 .orElseThrow(() -> new IllegalArgumentException("Offer not found with id " + offerId));
         offer.setStatus(JobOfferStatus.REJECTED);
         return jobOfferRepository.save(offer);
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryGreaterThan(Double salary) {
+        return jobOfferRepository.findByExpectedSalaryGreaterThan(salary);
+    }
+
+    @Override
+    public List<JobOffer> findByOfferedSalaryLessThan(Double salary) {
+        return jobOfferRepository.findByOfferedSalaryLessThan(salary);
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryBetween(Double minSalary, Double maxSalary) {
+        return jobOfferRepository.findByExpectedSalaryBetween(minSalary, maxSalary);
+    }
+
+    @Override
+    public List<JobOffer> findByOfferedSalaryBetween(Double minSalary, Double maxSalary) {
+        return jobOfferRepository.findByOfferedSalaryBetween(minSalary, maxSalary);
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryIsNull() {
+        return jobOfferRepository.findByExpectedSalaryIsNull();
+    }
+
+    @Override
+    public List<JobOffer> findByOfferedSalaryIsNull() {
+        return jobOfferRepository.findByOfferedSalaryIsNull();
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryIsNotNull() {
+        return jobOfferRepository.findByExpectedSalaryIsNotNull();
+    }
+
+    @Override
+    public List<JobOffer> findByOfferedSalaryIsNotNull() {
+        return jobOfferRepository.findByOfferedSalaryIsNotNull();
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(Double expectedMin, Double offeredMax) {
+        return jobOfferRepository.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(expectedMin, offeredMax);
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(Double expectedMax, Double offeredMin) {
+        return jobOfferRepository.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(offeredMin, expectedMax);
+    }
+
+    @Override
+    public List<JobOffer> findByExpectedSalaryEqualsOfferedSalary() {
+        List<JobOffer> allOffers = jobOfferRepository.findAll();
+        return allOffers.stream()
+                .filter(offer -> offer.getExpectedSalary() != null && offer.getExpectedSalary().equals(offer.getOfferedSalary()))
+                .toList();
+    }
+
+    public JobOfferRepository getJobOfferRepository() {
+        return jobOfferRepository;
     }
 }

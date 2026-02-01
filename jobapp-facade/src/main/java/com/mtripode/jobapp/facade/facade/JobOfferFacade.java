@@ -32,4 +32,28 @@ public interface JobOfferFacade {
 
     // Rechazar oferta
     JobOfferDTO rejectOffer(Long id);
+
+    List<JobOfferDTO> findByExpectedSalaryGreaterThan(Double salary);
+
+    List<JobOfferDTO> findByOfferedSalaryLessThan(Double salary);
+
+    List<JobOfferDTO> findByExpectedSalaryBetween(Double minSalary, Double maxSalary);
+
+    List<JobOfferDTO> findByOfferedSalaryBetween(Double minSalary, Double maxSalary);
+
+    List<JobOfferDTO> findByExpectedSalaryIsNull();
+
+    List<JobOfferDTO> findByOfferedSalaryIsNull();
+
+    List<JobOfferDTO> findByExpectedSalaryIsNotNull();
+
+    List<JobOfferDTO> findByOfferedSalaryIsNotNull();
+
+    List<JobOfferDTO> findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(Double expectedMin, Double offeredMax);
+
+    List<JobOfferDTO> findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(Double expectedMax, Double offeredMin);
+
+    List<JobOfferDTO> findByExpectedSalaryEqualsOfferedSalary();
+
+
 }
