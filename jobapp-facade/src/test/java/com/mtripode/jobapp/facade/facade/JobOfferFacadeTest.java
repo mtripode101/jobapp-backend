@@ -118,15 +118,21 @@ class JobOfferFacadeTest {
     @Test
     @DisplayName("Update offer should persist and return DTO")
     void testUpdateOffer() {
-        JobOffer offer = buildJobOffer();
-        JobOfferDTO dto = buildJobOfferDto();
+        JobOffer offer = buildJobOffer();        // entidad existente
+        JobOfferDTO dto = buildJobOfferDto();    // DTO con cambios
 
+        // Mockear la búsqueda inicial
+        when(jobOfferService.findById(dto.getId())).thenReturn(Optional.of(offer));
+
+        // Mockear el save
         when(jobOfferService.saveJobOffer(any(JobOffer.class))).thenReturn(offer);
 
         JobOfferDTO updated = jobOfferFacade.updateOffer(dto);
 
         assertThat(updated.getStatus()).isEqualTo(JobOfferStatus.PENDING);
         assertThat(updated.getApplicationId()).isEqualTo(100L);
+
+        verify(jobOfferService, times(1)).findById(dto.getId());
         verify(jobOfferService, times(1)).saveJobOffer(any(JobOffer.class));
     }
 
@@ -289,5 +295,5 @@ class JobOfferFacadeTest {
 
         assertThat(results.get(0).getExpectedSalary()).isEqualTo(results.get(0).getOfferedSalary());
         verify(jobOfferService).findByExpectedSalaryEqualsOfferedSalary();
-    }    
+    }
 }

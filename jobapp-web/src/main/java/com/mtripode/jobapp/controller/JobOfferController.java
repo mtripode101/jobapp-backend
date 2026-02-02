@@ -76,4 +76,67 @@ public class JobOfferController {
     public ResponseEntity<JobOfferDTO> rejectOffer(@PathVariable Long id) {
         return ResponseEntity.ok(jobOfferFacade.rejectOffer(id));
     }
+
+    // --- Consultas por salario ---
+    @GetMapping("/expected-salary/greater-than")
+    public List<JobOfferDTO> findByExpectedSalaryGreaterThan(@RequestParam Double salary) {
+        return jobOfferFacade.findByExpectedSalaryGreaterThan(salary);
+    }
+
+    @GetMapping("/offered-salary/less-than")
+    public List<JobOfferDTO> findByOfferedSalaryLessThan(@RequestParam Double salary) {
+        return jobOfferFacade.findByOfferedSalaryLessThan(salary);
+    }
+
+    @GetMapping("/expected-salary/between")
+    public List<JobOfferDTO> findByExpectedSalaryBetween(@RequestParam Double minSalary,
+            @RequestParam Double maxSalary) {
+        return jobOfferFacade.findByExpectedSalaryBetween(minSalary, maxSalary);
+    }
+
+    @GetMapping("/offered-salary/between")
+    public List<JobOfferDTO> findByOfferedSalaryBetween(@RequestParam Double minSalary,
+            @RequestParam Double maxSalary) {
+        return jobOfferFacade.findByOfferedSalaryBetween(minSalary, maxSalary);
+    }
+
+// --- Consultas por null / not null ---
+    @GetMapping("/expected-salary/null")
+    public List<JobOfferDTO> findByExpectedSalaryIsNull() {
+        return jobOfferFacade.findByExpectedSalaryIsNull();
+    }
+
+    @GetMapping("/offered-salary/null")
+    public List<JobOfferDTO> findByOfferedSalaryIsNull() {
+        return jobOfferFacade.findByOfferedSalaryIsNull();
+    }
+
+    @GetMapping("/expected-salary/not-null")
+    public List<JobOfferDTO> findByExpectedSalaryIsNotNull() {
+        return jobOfferFacade.findByExpectedSalaryIsNotNull();
+    }
+
+    @GetMapping("/offered-salary/not-null")
+    public List<JobOfferDTO> findByOfferedSalaryIsNotNull() {
+        return jobOfferFacade.findByOfferedSalaryIsNotNull();
+    }
+
+    @GetMapping("/expected-greater-and-offered-less")
+    public List<JobOfferDTO> findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(
+            @RequestParam Double expectedMin,
+            @RequestParam Double offeredMax) {
+        return jobOfferFacade.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(expectedMin, offeredMax);
+    }
+
+    @GetMapping("/expected-less-and-offered-greater")
+    public List<JobOfferDTO> findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(
+            @RequestParam Double expectedMax,
+            @RequestParam Double offeredMin) {
+        return jobOfferFacade.findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(expectedMax, offeredMin);
+    }
+
+    @GetMapping("/salary/equals")
+    public List<JobOfferDTO> findByExpectedSalaryEqualsOfferedSalary() {
+        return jobOfferFacade.findByExpectedSalaryEqualsOfferedSalary();
+    }
 }

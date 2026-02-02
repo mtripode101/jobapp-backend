@@ -98,6 +98,8 @@ public class ExcelImportJob {
 
                     LocalDate dateRejected = parseDate(row.getCell(6));
                     String jobID = safeGetString(row, 7); 
+                    String expectedSalary = safeGetString(row, 8);
+                    String offeredSalary = safeGetString(row, 9);
                     JobApplication existingApp = jobApplicationRepository.findByJobId(jobID);
                     if (Objects.nonNull(existingApp)) {
                         logger.info("Job application with Job ID {} already exists. Skipping row {}.", jobID, i);
@@ -145,6 +147,14 @@ public class ExcelImportJob {
                     }
 
                     JobOffer offer = new JobOffer(dateApplied, JobOfferStatus.PENDING, application);
+                    if (StringUtils.isNotEmpty(expectedSalary)) {
+                        Double expectedSalaryD = Double.valueOf(expectedSalary);
+                        offer.setExpectedSalary(expectedSalaryD);
+                    }
+                    if (StringUtils.isNotEmpty(offeredSalary)) {
+                        Double offeredSalayD = Double.valueOf(offeredSalary);
+                        offer.setOfferedSalary(offeredSalayD);
+                    }
                     application.addOffer(offer); // maintain bidirectional relationship
 
                     jobApplicationRepository.save(application);

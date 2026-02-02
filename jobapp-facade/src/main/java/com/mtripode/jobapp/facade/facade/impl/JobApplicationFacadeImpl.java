@@ -31,7 +31,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     }
 
     @Override
-    @CacheEvict(value = "jobs-applications", key = "#dto.jobId")
+    @CacheEvict(value = "jobs-applications", key = "#dto.jobId",  allEntries = true)
     public JobApplicationDto applyToJob(JobApplicationDto dto) {
         JobApplication entity = jobApplicationMapper.toEntity(dto);
         JobApplication saved = jobApplicationService.applyToJob(
@@ -47,7 +47,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     }
 
     @Override
-    @CacheEvict(value = "jobs-applications", key = "#dto.jobId")
+    @CacheEvict(value = "jobs-applications", key = "#dto.jobId",  allEntries = true)
     public JobApplicationDto applyRejected(JobApplicationDto dto) {
         JobApplication entity = jobApplicationMapper.toEntity(dto);
         JobApplication saved = jobApplicationService.applyRejected(
@@ -87,13 +87,13 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     }
 
     @Override
-    @CacheEvict(value = "jobs-applications", key = "#id")
+    @CacheEvict(value = "jobs-applications", key = "#id",  allEntries = true)
     public void deleteById(Long id) {
         jobApplicationService.deleteById(id);
     }
 
     @Override
-    @CacheEvict(value = "jobs-applications", key = "#id")
+    @CacheEvict(value = "jobs-applications", key = "#id",  allEntries = true)
     public JobApplicationDto updateStatus(Long id, String newStatus) {
         JobApplication updated = jobApplicationService.updateStatus(id, Status.valueOf(newStatus));
         return jobApplicationMapper.toDto(updated);
