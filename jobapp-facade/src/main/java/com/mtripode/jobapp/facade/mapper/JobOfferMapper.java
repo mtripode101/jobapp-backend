@@ -11,6 +11,8 @@ public class JobOfferMapper {
         dto.setOfferedAt(offer.getOfferedAt());
         dto.setStatus(offer.getStatus());
         dto.setApplicationId(offer.getApplication().getId());
+        dto.setExpectedSalary(offer.getExpectedSalary());
+        dto.setOfferedSalary(offer.getOfferedSalary());
         return dto;
     }
 
@@ -19,7 +21,8 @@ public class JobOfferMapper {
         offer.setId(dto.getId());
         offer.setOfferedAt(dto.getOfferedAt());
         offer.setStatus(dto.getStatus());
-        // La relación con JobApplication se resuelve en el service
+        offer.setExpectedSalary(dto.getExpectedSalary());
+        offer.setOfferedSalary(dto.getOfferedSalary());
         return offer;
     }
 }

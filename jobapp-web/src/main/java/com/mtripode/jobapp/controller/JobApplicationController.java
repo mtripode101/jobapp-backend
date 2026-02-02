@@ -51,6 +51,11 @@ public class JobApplicationController {
         return ResponseEntity.ok(jobApplicationFacade.applyRejected(dto));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<JobApplicationDto> update(@PathVariable Long id, @RequestBody JobApplicationDto dto) {
+        return ResponseEntity.ok(this.jobApplicationFacade.update(id, dto));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<JobApplicationDto> getApplicationById(@PathVariable Long id) {
         Optional<JobApplicationDto> application = jobApplicationFacade.findById(id);

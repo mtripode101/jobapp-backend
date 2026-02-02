@@ -12,6 +12,8 @@ public class JobOfferDTO extends BaseDto implements Serializable {
     private LocalDate offeredAt;
     private JobOfferStatus status;
     private Long applicationId;
+    private Double expectedSalary;
+    private Double offeredSalary;
 
     public LocalDate getOfferedAt() {
         return offeredAt;
@@ -35,5 +37,21 @@ public class JobOfferDTO extends BaseDto implements Serializable {
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public Double getExpectedSalary() {
+        return expectedSalary;
+    }
+
+    public void setExpectedSalary(Double excpectedSalary) {
+        this.expectedSalary = excpectedSalary;
+    }
+
+    public Double getOfferedSalary() {
+        return offeredSalary;
+    }
+
+    public void setOfferedSalary(Double offeredSalary) {
+        this.offeredSalary = offeredSalary;
     }
 }

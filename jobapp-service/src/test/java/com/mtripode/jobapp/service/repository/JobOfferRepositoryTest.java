@@ -108,4 +108,97 @@ class JobApplicationRepositoryOfferTest {
         List<JobApplication> results = jobApplicationRepository.findByOffers_OfferedAtAfter(LocalDate.now().minusDays(2));
         assertThat(results).isNotEmpty();
     }
+
+@Test
+@DisplayName("Find offers with expected salary greater than")
+void testFindByExpectedSalaryGreaterThan() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setExpectedSalary(5000.0);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByExpectedSalaryGreaterThan(4000.0);
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getExpectedSalary()).isGreaterThan(4000.0);
+}
+
+@Test
+@DisplayName("Find offers with offered salary less than")
+void testFindByOfferedSalaryLessThan() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setOfferedSalary(3000.0);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByOfferedSalaryLessThan(4000.0);
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getOfferedSalary()).isLessThan(4000.0);
+}
+
+@Test
+@DisplayName("Find offers with expected salary between range")
+void testFindByExpectedSalaryBetween() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setExpectedSalary(4500.0);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByExpectedSalaryBetween(4000.0, 5000.0);
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getExpectedSalary()).isBetween(4000.0, 5000.0);
+}
+
+@Test
+@DisplayName("Find offers with offered salary between range")
+void testFindByOfferedSalaryBetween() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setOfferedSalary(3500.0);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByOfferedSalaryBetween(3000.0, 4000.0);
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getOfferedSalary()).isBetween(3000.0, 4000.0);
+}
+
+@Test
+@DisplayName("Find offers with expected salary null")
+void testFindByExpectedSalaryIsNull() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setExpectedSalary(null);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByExpectedSalaryIsNull();
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getExpectedSalary()).isNull();
+}
+
+@Test
+@DisplayName("Find offers with offered salary not null")
+void testFindByOfferedSalaryIsNotNull() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setOfferedSalary(2500.0);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByOfferedSalaryIsNotNull();
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getOfferedSalary()).isNotNull();
+}
+
+@Test
+@DisplayName("Find offers with expected salary greater than and offered salary less than")
+void testFindByExpectedSalaryGreaterThanAndOfferedSalaryLessThan() {
+    JobApplication application = buildApplication();
+    JobOffer offer = new JobOffer(LocalDate.now(), JobOfferStatus.PENDING, application);
+    offer.setExpectedSalary(6000.0);
+    offer.setOfferedSalary(3000.0);
+    jobOfferRepository.save(offer);
+
+    List<JobOffer> results = jobOfferRepository.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(5000.0, 4000.0);
+    assertThat(results).isNotEmpty();
+    assertThat(results.get(0).getExpectedSalary()).isGreaterThan(5000.0);
+    assertThat(results.get(0).getOfferedSalary()).isLessThan(4000.0);
+}    
 }
