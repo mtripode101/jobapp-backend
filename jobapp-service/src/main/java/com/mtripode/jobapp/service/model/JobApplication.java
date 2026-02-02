@@ -5,19 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.mtripode.jobapp.service.repository.interceptors.JobApplicationEntityListener;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "job_application")
+@EntityListeners(JobApplicationEntityListener.class)
 public class JobApplication extends BaseEntity {
 
     @Column(name = "job_id", nullable = false, unique = true, length = 100)
@@ -68,6 +74,13 @@ public class JobApplication extends BaseEntity {
     // Job offers linked to this application
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOffer> offers = new ArrayList<>();
+
+    @Transient
+    private Status previousStatus;
+
+    public Status getPreviousStatus() {
+        return previousStatus;
+    }
 
     // Constructors
     public JobApplication() {
@@ -156,7 +169,13 @@ public class JobApplication extends BaseEntity {
         return status;
     }
 
+    @PostLoad
+    public void afterLoad() {
+        this.previousStatus = this.status;
+    }
+
     public void setStatus(Status status) {
+        this.previousStatus = this.status; // guardo el valor actual antes de cambiarlo
         this.status = status;
     }
 

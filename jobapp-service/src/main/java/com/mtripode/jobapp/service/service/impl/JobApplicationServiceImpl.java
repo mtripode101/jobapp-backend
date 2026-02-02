@@ -14,10 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.JobApplication;
+import com.mtripode.jobapp.service.model.JobOffer;
+import com.mtripode.jobapp.service.model.JobOfferStatus;
 import com.mtripode.jobapp.service.model.Position;
 import com.mtripode.jobapp.service.model.Status;
 import com.mtripode.jobapp.service.repository.JobApplicationRepository;
 import com.mtripode.jobapp.service.service.JobApplicationService;
+import com.mtripode.jobapp.service.service.JobOfferService;
 import com.mtripode.jobapp.service.validators.StatusTransitionValidator;
 
 import jakarta.annotation.PostConstruct;
@@ -29,8 +32,11 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     private final JobApplicationRepository jobApplicationRepository;
 
-    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository) {
+    private final JobOfferService jobOfferService;
+
+    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService) {
         this.jobApplicationRepository = jobApplicationRepository;
+        this.jobOfferService = jobOfferService;
     }
 
     @PostConstruct
@@ -123,13 +129,21 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public JobApplication update(Long id, JobApplication updateJobApplication) {
-        JobApplication app = jobApplicationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Application not found with id " + id));
-
-        Status current = app.getStatus();
-        if (!StatusTransitionValidator.canTransition(current, updateJobApplication.getStatus())) {
-            throw new IllegalStateException("Invalid transition from " + current + " to " + updateJobApplication.getStatus());
+        List<JobOffer> applicationOffers = this.jobOfferService.findByApplicationId(updateJobApplication.getId());
+        Status applicationStatus = updateJobApplication.getStatus();
+        JobOfferStatus jobOfferStatus = JobOfferStatus.PENDING;
+        if (applicationStatus.equals(Status.REJECTED)) {
+            jobOfferStatus = JobOfferStatus.REJECTED;
         }
+
+        // Actualizar estado de cada oferta
+        // ojo con el caching, no me actualiza
+        for (JobOffer offer : applicationOffers) {
+            offer.setStatus(jobOfferStatus);
+            jobOfferService.saveJobOffer(offer);
+        }
+
+         updateJobApplication.setOffers(applicationOffers);
 
         return jobApplicationRepository.save(updateJobApplication);
     }

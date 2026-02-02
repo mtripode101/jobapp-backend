@@ -154,11 +154,13 @@ class JobApplicationRepositoryTest {
     @DisplayName("Find applications submitted before a given date")
     void testFindByDateAppliedBefore() {
         JobApplication app = buildApplication(Status.APPLIED, "TechCorp", "Nina", "ML Engineer");
-        app.setDateApplied(LocalDate.now().minusDays(5));
+        app.setDateApplied(LocalDate.now().minusDays(5)); // se respeta
         jobApplicationRepository.save(app);
 
-        List<JobApplication> results = jobApplicationRepository.findByDateAppliedBefore(LocalDate.now().minusDays(2));
-        assertThat(results).isNotEmpty();
+        List<JobApplication> results
+                = jobApplicationRepository.findByDateAppliedBefore(LocalDate.now().minusDays(2));
+
+        assertThat(results).isNotEmpty(); // ahora sí encuentra
     }
 
     @Test
