@@ -2,14 +2,14 @@ package com.mtripode.jobapp.facade.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.dto.CandidateDto;
 import com.mtripode.jobapp.facade.dto.CompanyDto;
+import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.dto.PositionDto;
-import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Candidate;
-import com.mtripode.jobapp.service.model.ContactInfo;
 import com.mtripode.jobapp.service.model.Company;
+import com.mtripode.jobapp.service.model.ContactInfo;
+import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.Position;
 import com.mtripode.jobapp.service.model.Status;
 
@@ -90,7 +90,7 @@ public class JobApplicationMapper {
         entity.setJobId(dto.getJobId());
         entity.setDateApplied(dto.getDateApplied());
         if (dto.getStatus() != null) {
-            entity.setStatus(Enum.valueOf(Status.class, dto.getStatus()));
+            entity.setStatus(Status.fromDisplayName(dto.getStatus()));
         }
 
         // Candidate mapping

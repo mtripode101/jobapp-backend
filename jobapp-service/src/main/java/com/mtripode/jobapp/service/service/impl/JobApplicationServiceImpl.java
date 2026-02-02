@@ -121,6 +121,11 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return jobApplicationRepository.save(application);
     }
 
+    @Override
+    public JobApplication update(Long id, JobApplication updateJobApplication) {
+         return jobApplicationRepository.save(updateJobApplication);       
+    }
+
     /**
      * List applications by status.
      */

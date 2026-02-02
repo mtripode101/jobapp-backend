@@ -27,6 +27,8 @@ public interface JobApplicationService {
     // Update the status of an application with validation
     JobApplication updateStatus(Long id, Status newStatus);
 
+    JobApplication update(Long id, JobApplication updateJobApplication);
+
     // Create a rejected application directly
     JobApplication applyRejected(String sourceLink, String websiteSource, String description,
             Candidate candidate, Company company, Position position, String jobId);

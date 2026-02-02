@@ -31,6 +31,8 @@ public interface JobApplicationFacade {
     // Actualizar estado de una aplicación
     JobApplicationDto updateStatus(Long id, String newStatus);
 
+    JobApplicationDto update(Long id, JobApplicationDto dto);
+
     // Buscar aplicaciones por estado
     List<JobApplicationDto> findByStatus(String status);
 
