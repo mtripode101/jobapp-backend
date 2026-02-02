@@ -123,7 +123,15 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     @Override
     public JobApplication update(Long id, JobApplication updateJobApplication) {
-         return jobApplicationRepository.save(updateJobApplication);       
+        JobApplication app = jobApplicationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found with id " + id));
+
+        Status current = app.getStatus();
+        if (!StatusTransitionValidator.canTransition(current, updateJobApplication.getStatus())) {
+            throw new IllegalStateException("Invalid transition from " + current + " to " + updateJobApplication.getStatus());
+        }
+
+        return jobApplicationRepository.save(updateJobApplication);
     }
 
     /**
