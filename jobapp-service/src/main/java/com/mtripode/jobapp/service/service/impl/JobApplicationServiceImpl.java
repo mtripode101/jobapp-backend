@@ -11,13 +11,17 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mtripode.jobapp.service.cache.CacheUtilService;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.JobApplication;
+import com.mtripode.jobapp.service.model.JobOffer;
+import com.mtripode.jobapp.service.model.JobOfferStatus;
 import com.mtripode.jobapp.service.model.Position;
 import com.mtripode.jobapp.service.model.Status;
 import com.mtripode.jobapp.service.repository.JobApplicationRepository;
 import com.mtripode.jobapp.service.service.JobApplicationService;
+import com.mtripode.jobapp.service.service.JobOfferService;
 import com.mtripode.jobapp.service.validators.StatusTransitionValidator;
 
 import jakarta.annotation.PostConstruct;
@@ -29,8 +33,14 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     private final JobApplicationRepository jobApplicationRepository;
 
-    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository) {
+    private final JobOfferService jobOfferService;
+
+    private final CacheUtilService cacheUtilService;
+
+    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService, CacheUtilService cacheUtilService) {
         this.jobApplicationRepository = jobApplicationRepository;
+        this.jobOfferService = jobOfferService;
+        this.cacheUtilService = cacheUtilService;
     }
 
     @PostConstruct
@@ -121,9 +131,31 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return jobApplicationRepository.save(application);
     }
 
+    @Transactional
     @Override
     public JobApplication update(Long id, JobApplication updateJobApplication) {
-         return jobApplicationRepository.save(updateJobApplication);       
+        // Recuperar ofertas asociadas a la aplicación
+        List<JobOffer> applicationOffers = this.jobOfferService.findByApplicationId(updateJobApplication.getId());
+
+        Status applicationStatus = updateJobApplication.getStatus();
+        JobOfferStatus jobOfferStatus = JobOfferStatus.PENDING;
+        if (applicationStatus.equals(Status.REJECTED)) {
+            jobOfferStatus = JobOfferStatus.REJECTED;
+        }
+
+        for (JobOffer offer : applicationOffers) {
+            offer.setStatus(jobOfferStatus);
+            jobOfferService.saveJobOffer(offer);
+
+            // Evict the cache entry for this specific offer
+            cacheUtilService.evictCacheEntry("job-offers", offer.getId());
+
+        }
+
+        cacheUtilService.clearCache("job-offers");
+        updateJobApplication.setOffers(applicationOffers);
+
+        return jobApplicationRepository.save(updateJobApplication);
     }
 
     /**

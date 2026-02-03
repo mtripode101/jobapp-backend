@@ -1,5 +1,6 @@
 package com.mtripode.jobapp.facade.facade;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +18,10 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
-import com.mtripode.jobapp.facade.mapper.JobApplicationMapper;
 import com.mtripode.jobapp.facade.facade.impl.JobApplicationFacadeImpl;
+import com.mtripode.jobapp.facade.mapper.JobApplicationMapper;
 import com.mtripode.jobapp.service.model.JobApplication;
+import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.Status;
 import com.mtripode.jobapp.service.service.JobApplicationService;
 
@@ -46,6 +48,9 @@ class JobApplicationFacadeTest {
         jobApp.setDescription("Backend Developer role");
         jobApp.setStatus(Status.APPLIED);
         jobApp.setJobId("JOB-1");
+        List<JobOffer> jobOffers = new ArrayList<>();
+        jobApp.setOffers(jobOffers);
+        jobApp.setInterviews(new ArrayList<>());
         return jobApp;
     }
 
@@ -57,6 +62,8 @@ class JobApplicationFacadeTest {
         dto.setDescription("Backend Developer role");
         dto.setStatus(Status.APPLIED.toString());
         dto.setJobId("JOB-1");
+        dto.setOffers(new ArrayList<>());
+        dto.setInterviews(new ArrayList<>());
         return dto;
     }
 

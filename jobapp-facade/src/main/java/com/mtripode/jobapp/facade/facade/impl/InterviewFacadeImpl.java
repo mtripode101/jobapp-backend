@@ -48,7 +48,7 @@ public class InterviewFacadeImpl implements InterviewFacade {
         List<Interview> entities = interviewService.findAll();
         logger.debug("getAllInterviews - {} entrevistas recuperadas desde el servicio", entities.size());
         return entities.stream()
-                .map(interviewMapper::toDto)
+                .map(InterviewMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -56,7 +56,7 @@ public class InterviewFacadeImpl implements InterviewFacade {
     @Cacheable(value = "interviews", key = "#id")
     public Optional<InterviewDto> getInterviewById(Long id) {
         logger.debug("getInterviewById - inicio. id={}", id);
-        return interviewService.findById(id).map(interviewMapper::toDto);
+        return interviewService.findById(id).map(InterviewMapper::toDto);
     }
 
     @Override

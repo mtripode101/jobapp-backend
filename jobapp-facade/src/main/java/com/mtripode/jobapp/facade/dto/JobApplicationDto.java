@@ -3,6 +3,7 @@ package com.mtripode.jobapp.facade.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class JobApplicationDto extends BaseDto implements Serializable {
 
@@ -12,9 +13,11 @@ public class JobApplicationDto extends BaseDto implements Serializable {
     private CandidateDto candidate;
     private CompanyDto company;
     private PositionDto position;
-    private String status; // APPLIED, REJECTED, INTERVIEW, OFFERED
+    private String status; 
     private String jobId;
     private LocalDate  dateApplied;
+    private List<JobOfferDTO> offers;
+    private List<InterviewDto> interviews;
     private static final long serialVersionUID = 1L;
 
     public JobApplicationDto() {
@@ -110,4 +113,22 @@ public class JobApplicationDto extends BaseDto implements Serializable {
     public void setDateApplied(LocalDate  dateApplied) {
         this.dateApplied = dateApplied;
     }
+
+    public List<JobOfferDTO> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(List<JobOfferDTO> offers) {
+        this.offers = offers;
+    }
+
+    public List<InterviewDto> getInterviews() {
+        return interviews;
+    }
+
+    public void setInterviews(List<InterviewDto> interviews) {
+        this.interviews = interviews;
+    }
+
+    
 }
