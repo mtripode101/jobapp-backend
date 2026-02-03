@@ -137,14 +137,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         // Recuperar ofertas asociadas a la aplicación
         List<JobOffer> applicationOffers = this.jobOfferService.findByApplicationId(updateJobApplication.getId());
 
-        // Determinar estado de la aplicación y de las ofertas
         Status applicationStatus = updateJobApplication.getStatus();
         JobOfferStatus jobOfferStatus = JobOfferStatus.PENDING;
         if (applicationStatus.equals(Status.REJECTED)) {
             jobOfferStatus = JobOfferStatus.REJECTED;
         }
 
-        // Actualizar estado de cada oferta
         for (JobOffer offer : applicationOffers) {
             offer.setStatus(jobOfferStatus);
             jobOfferService.saveJobOffer(offer);
@@ -155,10 +153,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         }
 
         cacheUtilService.clearCache("job-offers");
-        // Asociar ofertas actualizadas a la aplicación
         updateJobApplication.setOffers(applicationOffers);
 
-        // Guardar aplicación y devolver entidad sincronizada
         return jobApplicationRepository.save(updateJobApplication);
     }
 
