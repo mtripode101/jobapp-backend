@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .requestMatchers("/positions/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/excelimport/**").permitAll() 
+                .requestMatchers("cronjob/**").permitAll()
 
                 // Actuator: permitir health e info públicamente en dev
                 //.requestMatchers("/actuator/health", "/actuator/info").permitAll()

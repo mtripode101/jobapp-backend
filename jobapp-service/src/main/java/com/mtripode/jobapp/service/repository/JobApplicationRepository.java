@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.mtripode.jobapp.service.model.JobApplication;
-import com.mtripode.jobapp.service.model.Status;
 import com.mtripode.jobapp.service.model.JobOfferStatus;
+import com.mtripode.jobapp.service.model.Status;
 
 
 @Repository
@@ -66,4 +66,6 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     // Find application by unique job ID
     JobApplication findByJobId(String jobId);
+
+    List<JobApplication> findByStatusAndDateAppliedBefore(Status status, LocalDate date);
 }
