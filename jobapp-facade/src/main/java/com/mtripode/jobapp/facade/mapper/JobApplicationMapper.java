@@ -1,15 +1,22 @@
 package com.mtripode.jobapp.facade.mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 import com.mtripode.jobapp.facade.dto.CandidateDto;
 import com.mtripode.jobapp.facade.dto.CompanyDto;
+import com.mtripode.jobapp.facade.dto.InterviewDto;
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
+import com.mtripode.jobapp.facade.dto.JobOfferDTO;
 import com.mtripode.jobapp.facade.dto.PositionDto;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.ContactInfo;
+import com.mtripode.jobapp.service.model.Interview;
 import com.mtripode.jobapp.service.model.JobApplication;
+import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.Position;
 import com.mtripode.jobapp.service.model.Status;
 
@@ -31,6 +38,13 @@ public class JobApplicationMapper {
         dto.setStatus(entity.getStatus() != null ? entity.getStatus().name() : null);
         dto.setJobId(entity.getJobId());
         dto.setDateApplied(entity.getDateApplied());
+        List<JobOffer> entityOffers = entity.getOffers();
+        List<JobOfferDTO> dtoOffers = entityOffers.stream().map(JobOfferMapper::toDTO).collect(Collectors.toList());
+        dto.setOffers(dtoOffers);
+
+        List<Interview> entityInterviews = entity.getInterviews();
+        List<InterviewDto> dtoInterviews = entityInterviews.stream().map(InterviewMapper::toDto).collect(Collectors.toList());
+        dto.setInterviews(dtoInterviews);
 
         // Candidate mapping
         if (entity.getCandidate() != null) {
@@ -89,6 +103,16 @@ public class JobApplicationMapper {
         entity.setDescription(dto.getDescription());
         entity.setJobId(dto.getJobId());
         entity.setDateApplied(dto.getDateApplied());
+
+        List<JobOfferDTO> offerDTOs = dto.getOffers();
+        List<JobOffer> entityOffers = offerDTOs.stream().map(JobOfferMapper::toEntity).collect(Collectors.toList());
+        entity.setOffers(entityOffers);
+
+        List<InterviewDto> interviewDtos = dto.getInterviews();
+        List<Interview> entityInterviews = interviewDtos.stream().map(InterviewMapper::toEntity).collect(Collectors.toList());
+        entity.setInterviews(entityInterviews);
+
+
         if (dto.getStatus() != null) {
             entity.setStatus(Status.fromDisplayName(dto.getStatus()));
         }

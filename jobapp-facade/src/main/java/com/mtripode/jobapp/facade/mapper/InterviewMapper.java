@@ -9,7 +9,7 @@ import com.mtripode.jobapp.service.model.JobApplication;
 @Component
 public class InterviewMapper {
 
-    public InterviewDto toDto(Interview interview) {
+    public static InterviewDto toDto(Interview interview) {
         if (interview == null) {
             return null;
         }
@@ -26,7 +26,7 @@ public class InterviewMapper {
         return dto;
     }
 
-    public Interview toEntity(InterviewDto dto) {
+    public static Interview toEntity(InterviewDto dto) {
         if (dto == null) {
             return null;
         }
