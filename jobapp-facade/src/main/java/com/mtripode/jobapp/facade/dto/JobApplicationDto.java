@@ -13,7 +13,7 @@ public class JobApplicationDto extends BaseDto implements Serializable {
     private CandidateDto candidate;
     private CompanyDto company;
     private PositionDto position;
-    private String status; // APPLIED, REJECTED, INTERVIEW, OFFERED
+    private String status; 
     private String jobId;
     private LocalDate  dateApplied;
     private List<JobOfferDTO> offers;
