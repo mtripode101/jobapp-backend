@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mtripode.jobapp.service.cache.CacheUtilService;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.JobApplication;
@@ -34,9 +35,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
     private final JobOfferService jobOfferService;
 
-    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService) {
+    private final CacheUtilService cacheUtilService;
+
+    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService, CacheUtilService cacheUtilService) {
         this.jobApplicationRepository = jobApplicationRepository;
         this.jobOfferService = jobOfferService;
+        this.cacheUtilService = cacheUtilService;
     }
 
     @PostConstruct
@@ -127,9 +131,13 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return jobApplicationRepository.save(application);
     }
 
+    @Transactional
     @Override
     public JobApplication update(Long id, JobApplication updateJobApplication) {
+        // Recuperar ofertas asociadas a la aplicación
         List<JobOffer> applicationOffers = this.jobOfferService.findByApplicationId(updateJobApplication.getId());
+
+        // Determinar estado de la aplicación y de las ofertas
         Status applicationStatus = updateJobApplication.getStatus();
         JobOfferStatus jobOfferStatus = JobOfferStatus.PENDING;
         if (applicationStatus.equals(Status.REJECTED)) {
@@ -137,14 +145,20 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         }
 
         // Actualizar estado de cada oferta
-        // ojo con el caching, no me actualiza
         for (JobOffer offer : applicationOffers) {
             offer.setStatus(jobOfferStatus);
             jobOfferService.saveJobOffer(offer);
+
+            // Evict the cache entry for this specific offer
+            cacheUtilService.evictCacheEntry("job-offers", offer.getId());
+
         }
 
-         updateJobApplication.setOffers(applicationOffers);
+        cacheUtilService.clearCache("job-offers");
+        // Asociar ofertas actualizadas a la aplicación
+        updateJobApplication.setOffers(applicationOffers);
 
+        // Guardar aplicación y devolver entidad sincronizada
         return jobApplicationRepository.save(updateJobApplication);
     }
 
