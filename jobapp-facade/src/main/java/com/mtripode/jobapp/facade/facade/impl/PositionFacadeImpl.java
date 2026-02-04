@@ -26,7 +26,7 @@ public class PositionFacadeImpl implements PositionFacade {
     }
 
     @Override
-    @CacheEvict(value = "positions", key = "#dto.id")
+    @CacheEvict(value = "positions", key = "#result.id")
     public PositionDto savePosition(PositionDto dto) {
         Position position = positionMapper.toEntity(dto);
         Position saved = positionService.savePosition(position);
