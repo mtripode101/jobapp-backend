@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mtripode.jobapp.service.cache.CacheUtilService;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
+import com.mtripode.jobapp.service.model.Interview;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.JobOfferStatus;
@@ -154,6 +155,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
 
         cacheUtilService.clearCache("job-offers");
         updateJobApplication.setOffers(applicationOffers);
+
+        if (updateJobApplication.getInterviews() != null) {
+            for (Interview interview : updateJobApplication.getInterviews()) {
+                interview.setApplication(updateJobApplication);
+            }
+        }
 
         return jobApplicationRepository.save(updateJobApplication);
     }
