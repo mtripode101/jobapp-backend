@@ -1,5 +1,7 @@
 package com.mtripode.jobapp.service.service.impl;
 
+import java.io.InputStream;
+
 import org.springframework.stereotype.Service;
 
 import com.mtripode.jobapp.service.job.ExcelImportJob;
@@ -29,6 +31,11 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 
     public String getFilePath() {
         return filePath;
+    }
+
+    @Override
+    public boolean processFile(InputStream inputStream){
+        return this.excelImportJob.processFile(inputStream);
     }
 
     
