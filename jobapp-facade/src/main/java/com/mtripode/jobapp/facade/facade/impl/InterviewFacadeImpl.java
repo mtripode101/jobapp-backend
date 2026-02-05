@@ -69,7 +69,7 @@ public class InterviewFacadeImpl implements InterviewFacade {
 
     @Override
     @Transactional
-    @CacheEvict(value = "interviews", allEntries = true)
+    @CacheEvict(value = {"interviews", "jobs-applications"}, allEntries = true)
     public InterviewDto saveInterview(InterviewDto interviewDto) {
         logger.debug("saveInterview - inicio. interviewDto={}", interviewDto);
 

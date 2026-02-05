@@ -41,7 +41,7 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
-    @CacheEvict(value = "job-offers", allEntries = true)
+    @CacheEvict(value = {"job-offers", "jobs-applications"}, allEntries = true)
     public JobOfferDTO createOffer(Long applicationId, LocalDate offeredAt, JobOfferStatus status) {
         return JobOfferMapper.toDTO(jobOfferService.createOffer(applicationId, offeredAt, status));
     }
