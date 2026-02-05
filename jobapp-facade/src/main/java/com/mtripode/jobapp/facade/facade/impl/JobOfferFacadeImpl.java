@@ -47,7 +47,7 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
-    @CacheEvict(value = "job-offers", key = "#dto.id",  allEntries = true)
+    @CacheEvict(value = {"job-offers", "jobs-applications"}, key = "#dto.id",  allEntries = true)
     public JobOfferDTO updateOffer(JobOfferDTO dto) {
         var existing = jobOfferService.findById(dto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Offer not found"));
@@ -62,7 +62,7 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
-    @CacheEvict(value = "job-offers", key = "#id",  allEntries = true)
+    @CacheEvict(value = {"job-offers", "jobs-applications"}, key = "#id",  allEntries = true)
     public void deleteOffer(Long id) {
         jobOfferService.deleteById(id);
     }
@@ -77,13 +77,13 @@ public class JobOfferFacadeImpl implements JobOfferFacade {
     }
 
     @Override
-    @CacheEvict(value = "job-offers", key = "#id",  allEntries = true)
+    @CacheEvict(value = {"job-offers", "jobs-applications"}, key = "#id",  allEntries = true)
     public JobOfferDTO acceptOffer(Long id) {
         return JobOfferMapper.toDTO(jobOfferService.acceptOffer(id));
     }
 
     @Override
-    @CacheEvict(value = "job-offers", key = "#id",  allEntries = true)
+    @CacheEvict(value = {"job-offers", "jobs-applications"}, key = "#id",  allEntries = true)
     public JobOfferDTO rejectOffer(Long id) {
         return JobOfferMapper.toDTO(jobOfferService.rejectOffer(id));
     }

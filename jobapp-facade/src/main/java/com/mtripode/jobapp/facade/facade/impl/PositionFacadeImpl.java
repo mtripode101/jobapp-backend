@@ -100,7 +100,7 @@ public class PositionFacadeImpl implements PositionFacade {
     }
 
     @Override
-    @CacheEvict(value = "positions", key = "#id")
+    @CacheEvict(value = {"positions", "jobs-applications"}, key = "#id")
     public PositionDto updatePosition(Long id, PositionDto dto) {
         Position position = positionMapper.toEntity(dto);
         Position updated = positionService.updatePosition(id, position);

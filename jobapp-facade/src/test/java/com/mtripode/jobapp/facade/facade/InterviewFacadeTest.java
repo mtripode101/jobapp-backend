@@ -34,16 +34,11 @@ class InterviewFacadeTest {
     @Mock
     private JobApplicationService jobApplicationService;
 
-    @Mock
-    private JobOfferService jobOfferService;
-
-    private InterviewMapper interviewMapper;
     private InterviewFacadeImpl interviewFacade;
 
     @BeforeEach
     void setUp() {
-        interviewMapper = new InterviewMapper(); // real mapper instance
-        interviewFacade = new InterviewFacadeImpl(interviewService, interviewMapper, jobApplicationService, jobOfferService);
+        interviewFacade = new InterviewFacadeImpl(interviewService, jobApplicationService);
     }
 
     private Interview buildInterview() {
