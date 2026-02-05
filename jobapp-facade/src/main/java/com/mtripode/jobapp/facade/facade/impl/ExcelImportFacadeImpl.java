@@ -1,5 +1,7 @@
 package com.mtripode.jobapp.facade.facade.impl;
 
+import java.io.InputStream;
+
 import org.springframework.stereotype.Component;
 
 import com.mtripode.jobapp.facade.facade.ExcelImportFacade;
@@ -18,6 +20,11 @@ public class ExcelImportFacadeImpl implements ExcelImportFacade {
     public boolean processFile(String filePath) {
         excelImportService.setFilePath(filePath);
         return excelImportService.processFile();
+    }
+
+    @Override
+    public boolean processFile(InputStream inputStream){
+        return this.excelImportService.processFile(inputStream);
     }
 
 }

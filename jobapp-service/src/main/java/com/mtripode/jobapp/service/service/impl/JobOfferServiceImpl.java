@@ -43,7 +43,8 @@ public class JobOfferServiceImpl implements JobOfferService {
         application.addOffer(offer); // maintain bidirectional relationship
         jobApplicationRepository.save(application);
 
-        return jobOfferRepository.save(offer);
+        return offer;
+        //return jobOfferRepository.save(offer);
     }
 
     // Find job offer by ID

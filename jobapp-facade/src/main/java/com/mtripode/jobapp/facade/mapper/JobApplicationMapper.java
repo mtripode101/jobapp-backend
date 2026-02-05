@@ -1,6 +1,8 @@
 package com.mtripode.jobapp.facade.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -104,11 +106,11 @@ public class JobApplicationMapper {
         entity.setJobId(dto.getJobId());
         entity.setDateApplied(dto.getDateApplied());
 
-        List<JobOfferDTO> offerDTOs = dto.getOffers();
+        List<JobOfferDTO> offerDTOs = Objects.nonNull(dto.getOffers()) ? dto.getOffers() : new ArrayList<>();
         List<JobOffer> entityOffers = offerDTOs.stream().map(JobOfferMapper::toEntity).collect(Collectors.toList());
         entity.setOffers(entityOffers);
 
-        List<InterviewDto> interviewDtos = dto.getInterviews();
+        List<InterviewDto> interviewDtos = Objects.nonNull(dto.getInterviews()) ? dto.getInterviews() : new ArrayList<>();
         List<Interview> entityInterviews = interviewDtos.stream().map(InterviewMapper::toEntity).collect(Collectors.toList());
         entity.setInterviews(entityInterviews);
 

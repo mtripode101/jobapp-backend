@@ -1,8 +1,8 @@
 package com.mtripode.jobapp.service.job;
 
-
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -56,16 +56,12 @@ public class ExcelImportJob {
         this.jobApplicationRepository = jobApplicationRepository;
     }
 
-    /**
-     * Run every day at 00:00 (midnight). Cron format: second minute hour day
-     * month weekday
-     */
     @Scheduled(cron = "0 0 0 * * *")
     public void runImportJob() {
         processFile("c://temp//jobapp.xlsx");
     }
 
-    public boolean processFile( String excelPath) {
+    public boolean processFile(String excelPath) {
         File file = new File(excelPath);
 
         Boolean fileProcessed = false;
@@ -75,104 +71,114 @@ public class ExcelImportJob {
         }
 
         try (FileInputStream fis = new FileInputStream(file); Workbook workbook = new XSSFWorkbook(fis)) {
-
-            Sheet sheet = workbook.getSheetAt(0);
-
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                if (row == null) {
-                    continue;
-                }
-
-                try {
-                    String source = safeGetString(row, 0);
-                    String link = safeGetString(row, 1);
-                    LocalDate dateApplied = parseDate(row.getCell(2));
-                    String description = safeGetString(row, 3);
-                    String companyName = safeGetString(row, 4);
-                    String statusStr = safeGetString(row, 5);
-
-                    Status status = StringUtils.isEmpty(statusStr)
-                            ? Status.APPLIED
-                            : Status.valueOf(statusStr.toUpperCase());
-
-                    LocalDate dateRejected = parseDate(row.getCell(6));
-                    String jobID = safeGetString(row, 7); 
-                    String expectedSalary = safeGetString(row, 8);
-                    String offeredSalary = safeGetString(row, 9);
-                    JobApplication existingApp = jobApplicationRepository.findByJobId(jobID);
-                    if (Objects.nonNull(existingApp)) {
-                        logger.info("Job application with Job ID {} already exists. Skipping row {}.", jobID, i);
-                        continue;
-                    }
-                    // Ensure company exists
-                    Company company = companyRepository.findByName(
-                            StringUtils.isEmpty(companyName) ? "Default" : companyName
-                    ).orElseGet(() -> companyRepository.save(
-                            new Company(StringUtils.isEmpty(companyName) ? "Default" : companyName, null, "")
-                    ));
-
-                    // Candidate find-or-create
-// Candidate find-or-create
-                    Candidate candidate = candidateRepository.findByContactInfoEmail("mtripode@yahoo.com.ar")
-                            .orElseGet(() -> {
-                                ContactInfo contactInfo = new ContactInfo(
-                                        "mtripode@yahoo.com.ar", // email
-                                        "000-0000", // phone
-                                        "https://linkedin.com/in/carlosmartintripode", // linkedIn opcional
-                                        "https://github.com/cmartintripode" // github opcional
-                                );
-                                Candidate newCandidate = new Candidate("Carlos Martin Tripode", contactInfo);
-                                return candidateRepository.save(newCandidate);
-                            });
-
-                    Position position = positionRepository.save(
-                            new Position("Imported Position", description, "Remote", company)
-                    );
-
-
-                    JobApplication application = new JobApplication(
-                            source,
-                            link,
-                            dateApplied,
-                            description,
-                            candidate,
-                            company,
-                            position,
-                            status,
-                            jobID
-                    );
-                    if (status == Status.REJECTED) {
-                        application.setDateRejected(dateRejected != null ? dateRejected : LocalDate.now());
-                    }
-
-                    JobOffer offer = new JobOffer(dateApplied, JobOfferStatus.PENDING, application);
-                    if (StringUtils.isNotEmpty(expectedSalary)) {
-                        Double expectedSalaryD = Double.valueOf(expectedSalary);
-                        offer.setExpectedSalary(expectedSalaryD);
-                    }
-                    if (StringUtils.isNotEmpty(offeredSalary)) {
-                        Double offeredSalayD = Double.valueOf(offeredSalary);
-                        offer.setOfferedSalary(offeredSalayD);
-                    }
-                    application.addOffer(offer); // maintain bidirectional relationship
-
-                    jobApplicationRepository.save(application);
-
-                } catch (Exception rowEx) {
-                    logger.error("Error processing row {}: {}", i, rowEx.getMessage());
-                }
-            }
-
-            logger.info("✅ Excel import completed successfully.");
+            processWorkbook(workbook);
             fileProcessed = true;
-
         } catch (Exception e) {
             logger.error("❌ Error importing Excel file: {}", e.getMessage(), e);
             return fileProcessed;
         }
 
         return fileProcessed;
+    }
+
+    public boolean processFile(InputStream inputStream) {
+        Boolean fileProcessed = false;
+        try (Workbook workbook = new XSSFWorkbook(inputStream)) {
+            processWorkbook(workbook);
+            fileProcessed = true;
+        } catch (Exception e) {
+            logger.error("❌ Error importing Excel from stream: {}", e.getMessage(), e);
+            return fileProcessed;
+        }
+        return fileProcessed;
+    }
+
+    private void processWorkbook(Workbook workbook) {
+        Sheet sheet = workbook.getSheetAt(0);
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) {
+                continue;
+            }
+
+            try {
+                String source = safeGetString(row, 0);
+                String link = safeGetString(row, 1);
+                LocalDate dateApplied = parseDate(row.getCell(2));
+                String description = safeGetString(row, 3);
+                String companyName = safeGetString(row, 4);
+                String statusStr = safeGetString(row, 5);
+
+                Status status = StringUtils.isEmpty(statusStr)
+                        ? Status.APPLIED
+                        : Status.valueOf(statusStr.toUpperCase());
+
+                LocalDate dateRejected = parseDate(row.getCell(6));
+                String jobID = safeGetString(row, 7);
+                String expectedSalary = safeGetString(row, 8);
+                String offeredSalary = safeGetString(row, 9);
+                JobApplication existingApp = jobApplicationRepository.findByJobId(jobID);
+                if (Objects.nonNull(existingApp)) {
+                    logger.info("Job application with Job ID {} already exists. Skipping row {}.", jobID, i);
+                    continue;
+                }
+                Company company = companyRepository.findByName(
+                        StringUtils.isEmpty(companyName) ? "Default" : companyName
+                ).orElseGet(() -> companyRepository.save(
+                        new Company(StringUtils.isEmpty(companyName) ? "Default" : companyName, null, "")
+                ));
+
+                Candidate candidate = candidateRepository.findByContactInfoEmail("mtripode@yahoo.com.ar")
+                        .orElseGet(() -> {
+                            ContactInfo contactInfo = new ContactInfo(
+                                    "mtripode@yahoo.com.ar",
+                                    "000-0000",
+                                    "https://linkedin.com/in/carlosmartintripode",
+                                    "https://github.com/cmartintripode"
+                            );
+                            Candidate newCandidate = new Candidate("Carlos Martin Tripode", contactInfo);
+                            return candidateRepository.save(newCandidate);
+                        });
+
+                Position position = positionRepository.save(
+                        new Position("Imported Position", description, "Remote", company)
+                );
+
+                JobApplication application = new JobApplication(
+                        source,
+                        link,
+                        dateApplied,
+                        description,
+                        candidate,
+                        company,
+                        position,
+                        status,
+                        jobID
+                );
+                if (status == Status.REJECTED) {
+                    application.setDateRejected(dateRejected != null ? dateRejected : LocalDate.now());
+                }
+
+                JobOffer offer = new JobOffer(dateApplied, JobOfferStatus.PENDING, application);
+                if (StringUtils.isNotEmpty(expectedSalary)) {
+                    Double expectedSalaryD = Double.valueOf(expectedSalary);
+                    offer.setExpectedSalary(expectedSalaryD);
+                }
+                if (StringUtils.isNotEmpty(offeredSalary)) {
+                    Double offeredSalayD = Double.valueOf(offeredSalary);
+                    offer.setOfferedSalary(offeredSalayD);
+                }
+                application.addOffer(offer);
+
+                jobApplicationRepository.save(application);
+
+            } catch (Exception rowEx) {
+                logger.error("Error processing row {}: {}", i, rowEx.getMessage());
+            }
+        }
+
+        logger.info("✅ Excel import completed successfully.");
     }
 
     private String safeGetString(Row row, int index) {
@@ -218,4 +224,3 @@ public class ExcelImportJob {
         return null;
     }
 }
-

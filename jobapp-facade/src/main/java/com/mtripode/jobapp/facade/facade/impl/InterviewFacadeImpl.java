@@ -19,7 +19,6 @@ import com.mtripode.jobapp.service.model.Interview;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.service.InterviewService;
 import com.mtripode.jobapp.service.service.JobApplicationService;
-import com.mtripode.jobapp.service.service.JobOfferService;
 
 @Component
 public class InterviewFacadeImpl implements InterviewFacade {
@@ -27,18 +26,12 @@ public class InterviewFacadeImpl implements InterviewFacade {
     private static final Logger logger = LoggerFactory.getLogger(InterviewFacadeImpl.class);
 
     private final InterviewService interviewService;
-    private final InterviewMapper interviewMapper;
     private final JobApplicationService jobApplicationService;
-    private final JobOfferService jobOfferService;
 
     public InterviewFacadeImpl(InterviewService interviewService,
-            InterviewMapper interviewMapper,
-            JobApplicationService jobApplicationService,
-            JobOfferService jobOfferService) {
+              JobApplicationService jobApplicationService) {
         this.interviewService = interviewService;
-        this.interviewMapper = interviewMapper;
         this.jobApplicationService = jobApplicationService;
-        this.jobOfferService = jobOfferService;
     }
 
     @Override
@@ -60,7 +53,7 @@ public class InterviewFacadeImpl implements InterviewFacade {
     }
 
     @Override
-    @CacheEvict(value = "interviews", key = "#id")
+    @CacheEvict(value = {"interviews", "jobs-applications"}, key = "#id")
     public void deleteInterview(Long id) {
         logger.debug("deleteInterview - inicio. id={}", id);
         interviewService.deleteById(id);
@@ -69,7 +62,7 @@ public class InterviewFacadeImpl implements InterviewFacade {
 
     @Override
     @Transactional
-    @CacheEvict(value = "interviews", allEntries = true)
+    @CacheEvict(value = {"interviews", "jobs-applications"}, allEntries = true)
     public InterviewDto saveInterview(InterviewDto interviewDto) {
         logger.debug("saveInterview - inicio. interviewDto={}", interviewDto);
 
@@ -85,24 +78,11 @@ public class InterviewFacadeImpl implements InterviewFacade {
         JobApplication application = jobApplicationService.findById(applicationId)
                 .orElseThrow(() -> new NoSuchElementException("JobApplication not found: id=" + applicationId));
 
-        Interview interviewEntity = interviewMapper.toEntity(interviewDto);
+        Interview interviewEntity = InterviewMapper.toEntity(interviewDto);
         interviewEntity.setApplication(application);
 
         Interview saved = interviewService.saveInterview(interviewEntity);
-        return interviewMapper.toDto(saved);
+        return InterviewMapper.toDto(saved);
     }
 
-    @Override
-    @Transactional
-    @CacheEvict(value = "interviews", allEntries = true)
-    public void acceptOffer(Long offerId) {
-        jobOfferService.acceptOffer(offerId);
-    }
-
-    @Override
-    @Transactional
-    @CacheEvict(value = "interviews", allEntries = true)
-    public void rejectOffer(Long offerId) {
-        jobOfferService.rejectOffer(offerId);
-    }
 }
