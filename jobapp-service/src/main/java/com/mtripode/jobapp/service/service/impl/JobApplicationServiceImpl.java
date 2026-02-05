@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mtripode.jobapp.service.cache.CacheUtilService;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
-import com.mtripode.jobapp.service.model.Interview;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.JobOfferStatus;
@@ -135,31 +134,31 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Transactional
     @Override
     public JobApplication update(Long id, JobApplication updateJobApplication) {
-        // Recuperar ofertas asociadas a la aplicación
-        List<JobOffer> applicationOffers = this.jobOfferService.findByApplicationId(updateJobApplication.getId());
+        List<JobOffer> applicationOffers = jobOfferService.findByApplicationId(id);
 
-        Status applicationStatus = updateJobApplication.getStatus();
         JobOfferStatus jobOfferStatus = JobOfferStatus.PENDING;
-        if (applicationStatus.equals(Status.REJECTED)) {
+        if (updateJobApplication.getStatus() == Status.REJECTED) {
             jobOfferStatus = JobOfferStatus.REJECTED;
         }
 
         for (JobOffer offer : applicationOffers) {
             offer.setStatus(jobOfferStatus);
             jobOfferService.saveJobOffer(offer);
-
-            // Evict the cache entry for this specific offer
-            cacheUtilService.evictCacheEntry("job-offers", offer.getId());
-
         }
 
         cacheUtilService.clearCache("job-offers");
+
+        updateJobApplication.setId(id);
         updateJobApplication.setOffers(applicationOffers);
 
         if (updateJobApplication.getInterviews() != null) {
-            for (Interview interview : updateJobApplication.getInterviews()) {
-                interview.setApplication(updateJobApplication);
-            }
+            updateJobApplication.getInterviews()
+                    .forEach(interview -> interview.setApplication(updateJobApplication));
+        }
+
+        if (updateJobApplication.getOffers() != null) {
+            updateJobApplication.getOffers()
+                    .forEach(offer -> offer.setApplication(updateJobApplication));
         }
 
         return jobApplicationRepository.save(updateJobApplication);
