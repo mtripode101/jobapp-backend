@@ -23,18 +23,15 @@ import com.mtripode.jobapp.service.service.JobApplicationService;
 public class JobApplicationFacadeImpl implements JobApplicationFacade {
 
     private final JobApplicationService jobApplicationService;
-    private final JobApplicationMapper jobApplicationMapper;
 
-    public JobApplicationFacadeImpl(JobApplicationService jobApplicationService,
-            JobApplicationMapper jobApplicationMapper) {
+    public JobApplicationFacadeImpl(JobApplicationService jobApplicationService) {
         this.jobApplicationService = jobApplicationService;
-        this.jobApplicationMapper = jobApplicationMapper;
     }
 
     @Override
     @CacheEvict(value = "jobs-applications", key = "#dto.jobId", allEntries = true)
     public JobApplicationDto applyToJob(JobApplicationDto dto) {
-        JobApplication entity = jobApplicationMapper.toEntity(dto);
+        JobApplication entity = JobApplicationMapper.toEntity(dto);
         JobApplication saved = jobApplicationService.applyToJob(
                 entity.getSourceLink(),
                 entity.getWebsiteSource(),
@@ -44,13 +41,13 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
                 entity.getPosition(),
                 entity.getJobId()
         );
-        return jobApplicationMapper.toDto(saved);
+        return JobApplicationMapper.toDto(saved);
     }
 
     @Override
     @CacheEvict(value = "jobs-applications", key = "#dto.jobId", allEntries = true)
     public JobApplicationDto applyRejected(JobApplicationDto dto) {
-        JobApplication entity = jobApplicationMapper.toEntity(dto);
+        JobApplication entity = JobApplicationMapper.toEntity(dto);
         JobApplication saved = jobApplicationService.applyRejected(
                 entity.getSourceLink(),
                 entity.getWebsiteSource(),
@@ -60,22 +57,22 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
                 entity.getPosition(),
                 entity.getJobId()
         );
-        return jobApplicationMapper.toDto(saved);
+        return JobApplicationMapper.toDto(saved);
     }
 
     @Override
     @CacheEvict(value = "jobs-applications", key = "#dto.jobId", allEntries = true)
     public JobApplicationDto update(Long id, JobApplicationDto dto) {
-        JobApplication entity = jobApplicationMapper.toEntity(dto);
+        JobApplication entity = JobApplicationMapper.toEntity(dto);
         JobApplication saved = jobApplicationService.update(entity.getId(), entity);
 
-        return jobApplicationMapper.toDto(saved);
+        return JobApplicationMapper.toDto(saved);
     }
 
     @Override
     @Cacheable(value = "jobs-applications", key = "#id")
     public Optional<JobApplicationDto> findById(Long id) {
-        return jobApplicationService.findById(id).map(jobApplicationMapper::toDto);
+        return jobApplicationService.findById(id).map(JobApplicationMapper::toDto);
     }
 
     @Override
@@ -83,7 +80,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     public List<JobApplicationDto> findAll() {
         return jobApplicationService.listAll()
                 .stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -92,7 +89,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
         // No cache aquí: Spring Cache no maneja bien CompletableFuture
         return jobApplicationService.listAllAsync()
                 .thenApply(list -> list.stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList()));
     }
 
@@ -106,7 +103,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     @CacheEvict(value = "jobs-applications", key = "#id", allEntries = true)
     public JobApplicationDto updateStatus(Long id, String newStatus) {
         JobApplication updated = jobApplicationService.updateStatus(id, Status.valueOf(newStatus));
-        return jobApplicationMapper.toDto(updated);
+        return JobApplicationMapper.toDto(updated);
     }
 
     @Override
@@ -114,7 +111,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     public List<JobApplicationDto> findByStatus(String status) {
         return jobApplicationService.listByStatus(Status.valueOf(status))
                 .stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -123,7 +120,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     public List<JobApplicationDto> findByCompanyName(String companyName) {
         return jobApplicationService.listByCompanyName(companyName)
                 .stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -132,7 +129,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     public List<JobApplicationDto> findByCandidateFullName(String fullName) {
         return jobApplicationService.listByCandidateFullName(fullName)
                 .stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -141,7 +138,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     public List<JobApplicationDto> findByPositionTitle(String title) {
         return jobApplicationService.listByPositionTitle(title)
                 .stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -149,7 +146,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     @Cacheable(value = "jobs-applications", key = "#jobId")
     public JobApplicationDto findByJobId(String jobId) {
         JobApplication application = jobApplicationService.findByJobId(jobId);
-        return jobApplicationMapper.toDto(application);
+        return JobApplicationMapper.toDto(application);
     }
 
     @Override
@@ -159,7 +156,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
 
         List<JobApplicationDto> dtos = page.getContent()
                 .stream()
-                .map(jobApplicationMapper::toDto)
+                .map(JobApplicationMapper::toDto)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(dtos, pageable, page.getTotalElements());
