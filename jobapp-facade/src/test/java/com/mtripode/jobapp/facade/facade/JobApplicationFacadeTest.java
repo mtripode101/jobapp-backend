@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.facade.impl.JobApplicationFacadeImpl;
-import com.mtripode.jobapp.facade.mapper.JobApplicationMapper;
 import com.mtripode.jobapp.service.model.JobApplication;
 import com.mtripode.jobapp.service.model.JobOffer;
 import com.mtripode.jobapp.service.model.Status;
@@ -31,13 +30,11 @@ class JobApplicationFacadeTest {
     @Mock
     private JobApplicationService jobApplicationService;
 
-    private JobApplicationMapper jobApplicationMapper;
     private JobApplicationFacadeImpl jobApplicationFacade;
 
     @BeforeEach
     void setUp() {
-        jobApplicationMapper = new JobApplicationMapper(); // real mapper
-        jobApplicationFacade = new JobApplicationFacadeImpl(jobApplicationService, jobApplicationMapper);
+        jobApplicationFacade = new JobApplicationFacadeImpl(jobApplicationService);
     }
 
     private JobApplication buildJobApplication() {

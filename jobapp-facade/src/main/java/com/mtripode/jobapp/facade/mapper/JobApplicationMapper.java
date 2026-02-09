@@ -25,7 +25,7 @@ import com.mtripode.jobapp.service.model.Status;
 @Component
 public class JobApplicationMapper {
 
-    public JobApplicationDto toDto(JobApplication entity) {
+    public static JobApplicationDto toDto(JobApplication entity) {
         if (entity == null) {
             return null;
         }
@@ -91,7 +91,7 @@ public class JobApplicationMapper {
         return dto;
     }
 
-    public JobApplication toEntity(JobApplicationDto dto) {
+    public static JobApplication toEntity(JobApplicationDto dto) {
         if (dto == null) {
             return null;
         }

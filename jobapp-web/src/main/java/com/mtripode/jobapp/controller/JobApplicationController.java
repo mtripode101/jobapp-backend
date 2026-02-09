@@ -1,5 +1,6 @@
 package com.mtripode.jobapp.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -21,9 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mtripode.jobapp.facade.dto.ErrorResponse;
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.facade.JobApplicationFacade;
 import com.mtripode.jobapp.facade.facade.impl.JobApplicationFacadeImpl;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/applications")
@@ -37,13 +41,16 @@ public class JobApplicationController {
     }
 
     @PostMapping
-    public ResponseEntity<JobApplicationDto> createApplication(@RequestBody JobApplicationDto dto) {
+    public ResponseEntity<Object> createApplication(@Valid @RequestBody JobApplicationDto dto) {
         if (jobApplicationFacade.findByJobId(dto.getJobId()) != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(null); // o un DTO con mensaje de error
+            ErrorResponse error = new ErrorResponse("Application already exists", HttpStatus.CONFLICT.value());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
 
-        return ResponseEntity.ok(jobApplicationFacade.applyToJob(dto));
+        JobApplicationDto created = jobApplicationFacade.applyToJob(dto);
+        return ResponseEntity
+                .created(URI.create("/applications/" + created.getId()))
+                .body(created);
     }
 
     @PostMapping("/rejected")

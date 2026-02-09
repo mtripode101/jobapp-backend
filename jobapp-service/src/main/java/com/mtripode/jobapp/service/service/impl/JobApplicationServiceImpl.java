@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -31,11 +33,14 @@ import jakarta.annotation.PreDestroy;
 @Transactional
 public class JobApplicationServiceImpl implements JobApplicationService {
 
+    private static final Logger log = LoggerFactory.getLogger(JobApplicationServiceImpl.class);
+
     private final JobApplicationRepository jobApplicationRepository;
 
     private final JobOfferService jobOfferService;
 
     private final CacheUtilService cacheUtilService;
+
 
     public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService, CacheUtilService cacheUtilService) {
         this.jobApplicationRepository = jobApplicationRepository;
@@ -72,7 +77,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 Status.APPLIED,
                 jobId
         );
-        return jobApplicationRepository.save(application);
+         return jobApplicationRepository.save(application);
+
     }
 
     /**
@@ -107,6 +113,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         if (newStatus == Status.REJECTED) {
             app.setDateRejected(LocalDate.now());
         }
+
         return jobApplicationRepository.save(app);
     }
 
@@ -239,7 +246,8 @@ public class JobApplicationServiceImpl implements JobApplicationService {
      */
     @Override
     public Optional<JobApplication> findById(Long id) {
-        return jobApplicationRepository.findById(id);
+        Optional<JobApplication> jobOptional = jobApplicationRepository.findById(id);
+        return jobOptional;
     }
 
     /**
