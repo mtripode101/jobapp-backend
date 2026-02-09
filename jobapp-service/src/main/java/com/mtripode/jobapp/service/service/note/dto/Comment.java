@@ -20,6 +20,10 @@ public class Comment {
     public void setMessage(String message) {
         this.message = message;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Comment author "+this.author+" message "+this.message;
+    }
 
 }

@@ -1,7 +1,9 @@
 package com.mtripode.jobapp.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,8 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mtripode.jobapp.facade.dto.ErrorResponse;
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.facade.JobApplicationFacade;
+import com.mtripode.jobapp.facade.facade.NoteFacade;
 import com.mtripode.jobapp.facade.facade.impl.JobApplicationFacadeImpl;
-
+import com.mtripode.jobapp.service.service.note.dto.Comment;
+import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
+import com.mtripode.jobapp.web.JobappApplication;
 import jakarta.validation.Valid;
 
 @RestController
@@ -34,10 +39,16 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "http://localhost:3000")
 public class JobApplicationController {
 
+    private final JobappApplication jobappApplication;
+
     private final JobApplicationFacade jobApplicationFacade;
 
-    public JobApplicationController(JobApplicationFacadeImpl jobApplicationFacade) {
+    private final NoteFacade noteFacade;
+
+    public JobApplicationController(JobApplicationFacadeImpl jobApplicationFacade, NoteFacade noteFacade, JobappApplication jobappApplication) {
         this.jobApplicationFacade = jobApplicationFacade;
+        this.noteFacade = noteFacade;
+        this.jobappApplication = jobappApplication;
     }
 
     @PostMapping
@@ -48,6 +59,18 @@ public class JobApplicationController {
         }
 
         JobApplicationDto created = jobApplicationFacade.applyToJob(dto);
+
+        if (Objects.nonNull(created)) {
+            String title = "JobApplication created for id " + created.getId();
+            String content = "This is the content for the title " + title;
+            List<Comment> comments = new ArrayList<>();
+            NoteDTO noteDto = this.noteFacade.createNoteForApplication(created.getId(), title, content, comments);
+            if (Objects.nonNull(dto)) {
+                // to do
+                System.err.println(noteDto.toString());
+            }
+        }
+
         return ResponseEntity
                 .created(URI.create("/applications/" + created.getId()))
                 .body(created);
@@ -55,17 +78,51 @@ public class JobApplicationController {
 
     @PostMapping("/rejected")
     public ResponseEntity<JobApplicationDto> createRejectedApplication(@RequestBody JobApplicationDto dto) {
-        return ResponseEntity.ok(jobApplicationFacade.applyRejected(dto));
+        JobApplicationDto applyRejected = jobApplicationFacade.applyRejected(dto);
+        if (Objects.nonNull(applyRejected)) {
+            String title = "JobApplication rejected for id " + applyRejected.getId();
+            String content = "This is the content for the title " + title;
+            List<Comment> comments = new ArrayList<>();
+            Comment comment = new Comment();
+            comment.setAuthor(applyRejected.getCandidate().getFullName());
+            comment.setMessage("Jobapplication Rejected");
+            comments.add(comment);
+            NoteDTO noteDto = this.noteFacade.createNoteForApplication(applyRejected.getId(), title, content, comments);
+            if (Objects.nonNull(dto)) {
+                // to do
+                System.err.println(noteDto.toString());
+            }
+        }
+        return ResponseEntity.ok(applyRejected);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<JobApplicationDto> update(@PathVariable Long id, @RequestBody JobApplicationDto dto) {
-        return ResponseEntity.ok(this.jobApplicationFacade.update(id, dto));
+        JobApplicationDto update = this.jobApplicationFacade.update(id, dto);
+        if (Objects.nonNull(update)) {
+            String title = "JobApplication updated for id " + update.getId();
+            String content = "This is the content for the title " + title;
+            List<Comment> comments = new ArrayList<>();
+            Comment comment = new Comment();
+            comment.setAuthor(update.getCandidate().getFullName());
+            comment.setMessage("Jobapplication Udpated");
+            comments.add(comment);
+            NoteDTO noteDto = this.noteFacade.createNoteForApplication(update.getId(), title, content, comments);
+            if (Objects.nonNull(dto)) {
+                // to do
+                System.err.println(noteDto.toString());
+            }
+        }
+        return ResponseEntity.ok(update);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<JobApplicationDto> getApplicationById(@PathVariable Long id) {
         Optional<JobApplicationDto> application = jobApplicationFacade.findById(id);
+        if (application.isPresent()) {
+            List<NoteDTO> notesDto = this.noteFacade.getNotesForApplication(application.get().getId());
+            notesDto.stream().forEach(note -> System.err.println("note "+note.toString()));
+        }
         return application.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

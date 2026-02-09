@@ -1,6 +1,7 @@
 package com.mtripode.jobapp.service.service.note.dto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NoteDTO {
 
@@ -59,6 +60,12 @@ public class NoteDTO {
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
+    }
+
+    @Override
+    public String toString() {
+        List<String> commentstStrings = this.comments.stream().map(Comment::toString).collect(Collectors.toList());
+        return "Note id " + this.id + " title " + this.title + " content " + this.content + " applicationID " + this.applicationId+" comments "+commentstStrings;
     }
 
 }
