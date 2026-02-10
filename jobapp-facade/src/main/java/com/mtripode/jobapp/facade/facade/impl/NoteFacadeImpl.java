@@ -66,4 +66,21 @@ public class NoteFacadeImpl implements NoteFacade {
 
         return notes;
     }
+
+    @Override
+    public boolean deleteNotesForApplication(Long applicationId) {
+        Optional<JobApplicationDto> jobApplicationOptional = jobApplicationService.findById(applicationId).map(JobApplicationMapper::toDto);
+        if (jobApplicationOptional.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return noteClient.deleteNotesForApplication(jobApplicationOptional.get().getId());
+        } catch (Exception e) {
+            // Log the error but do not break the main flow
+            log.warn("Failed to delete notes for application {}: {}", jobApplicationOptional.get().getId(), e.getMessage());
+            return false;
+        }
+
+    }
 }

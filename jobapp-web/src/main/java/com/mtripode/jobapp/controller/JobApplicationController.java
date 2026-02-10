@@ -31,7 +31,10 @@ import com.mtripode.jobapp.facade.facade.NoteFacade;
 import com.mtripode.jobapp.facade.facade.impl.JobApplicationFacadeImpl;
 import com.mtripode.jobapp.service.service.note.dto.Comment;
 import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
-import com.mtripode.jobapp.web.JobappApplication;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -39,16 +42,15 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "http://localhost:3000")
 public class JobApplicationController {
 
-    private final JobappApplication jobappApplication;
+    private static final Logger log = LoggerFactory.getLogger(JobApplicationController.class);
 
     private final JobApplicationFacade jobApplicationFacade;
 
     private final NoteFacade noteFacade;
 
-    public JobApplicationController(JobApplicationFacadeImpl jobApplicationFacade, NoteFacade noteFacade, JobappApplication jobappApplication) {
+    public JobApplicationController(JobApplicationFacadeImpl jobApplicationFacade, NoteFacade noteFacade) {
         this.jobApplicationFacade = jobApplicationFacade;
         this.noteFacade = noteFacade;
-        this.jobappApplication = jobappApplication;
     }
 
     @PostMapping
@@ -66,8 +68,7 @@ public class JobApplicationController {
             List<Comment> comments = new ArrayList<>();
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(created.getId(), title, content, comments);
             if (Objects.nonNull(dto)) {
-                // to do
-                System.err.println(noteDto.toString());
+                log.info("Created note for application: {}", noteDto.toString());
             }
         }
 
@@ -89,8 +90,7 @@ public class JobApplicationController {
             comments.add(comment);
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(applyRejected.getId(), title, content, comments);
             if (Objects.nonNull(dto)) {
-                // to do
-                System.err.println(noteDto.toString());
+                log.info("Created note for rejected application: {}", noteDto.toString());
             }
         }
         return ResponseEntity.ok(applyRejected);
@@ -109,8 +109,7 @@ public class JobApplicationController {
             comments.add(comment);
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(update.getId(), title, content, comments);
             if (Objects.nonNull(dto)) {
-                // to do
-                System.err.println(noteDto.toString());
+                log.info("Created note for update application: {}", noteDto.toString());
             }
         }
         return ResponseEntity.ok(update);
@@ -121,7 +120,7 @@ public class JobApplicationController {
         Optional<JobApplicationDto> application = jobApplicationFacade.findById(id);
         if (application.isPresent()) {
             List<NoteDTO> notesDto = this.noteFacade.getNotesForApplication(application.get().getId());
-            notesDto.stream().forEach(note -> System.err.println("note "+note.toString()));
+            notesDto.stream().forEach(note -> System.err.println("note " + note.toString()));
         }
         return application.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
@@ -152,9 +151,26 @@ public class JobApplicationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteApplication(@PathVariable Long id
-    ) {
+    public ResponseEntity<Void> deleteApplication(@PathVariable Long id) {
+        Optional<JobApplicationDto> applicationOptional = jobApplicationFacade.findById(id);
+
+        if (applicationOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Long applicationId = applicationOptional.get().getId();
+
+        try {
+            boolean notesDeleted = this.noteFacade.deleteNotesForApplication(applicationId);
+            if (!notesDeleted) {
+                log.info("No notes deleted for application {}", applicationId);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to delete notes for application {}: {}", applicationId, e.getMessage());
+        }
+
         jobApplicationFacade.deleteById(id);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -198,4 +214,5 @@ public class JobApplicationController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }

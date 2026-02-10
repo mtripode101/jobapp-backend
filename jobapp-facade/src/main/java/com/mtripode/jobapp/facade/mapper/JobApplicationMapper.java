@@ -37,7 +37,7 @@ public class JobApplicationMapper {
         dto.setSourceLink(entity.getSourceLink());
         dto.setWebsiteSource(entity.getWebsiteSource());
         dto.setDescription(entity.getDescription());
-        dto.setStatus(entity.getStatus() != null ? entity.getStatus().name() : null);
+        dto.setStatus(entity.getStatus() != null ? entity.getStatus().getDisplayName().toUpperCase() : null);
         dto.setJobId(entity.getJobId());
         dto.setDateApplied(entity.getDateApplied());
         List<JobOffer> entityOffers = entity.getOffers();

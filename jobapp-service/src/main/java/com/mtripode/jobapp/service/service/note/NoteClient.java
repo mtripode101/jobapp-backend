@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.mtripode.jobapp.service.service.note.dto.Comment;
 import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
 
+import reactor.core.publisher.Mono;
+
 @Component
 public class NoteClient {
 
@@ -23,7 +25,7 @@ public class NoteClient {
         dto.setTitle(title);
         dto.setContent(content);
         dto.setComments(comments);
-        
+
         return webClient.post()
                 .uri("/{id}/notes", applicationId)
                 .bodyValue(dto)
@@ -40,5 +42,12 @@ public class NoteClient {
                 .collectList()
                 .block();
     }
-    
+
+    public boolean deleteNotesForApplication(Long applicationId) {
+        return webClient.delete()
+                .uri("/application/{id}", applicationId)
+                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
+                .block();
+    }
+
 }

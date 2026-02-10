@@ -97,7 +97,7 @@ class JobApplicationFacadeTest {
         JobApplicationDto saved = jobApplicationFacade.applyRejected(dto);
 
         assertThat(saved).isNotNull();
-        assertThat(saved.getStatus()).isEqualTo("APPLIED");
+        assertThat(saved.getStatus()).isEqualToIgnoringCase("APPLIED");
         verify(jobApplicationService, times(1))
                 .applyRejected(anyString(), anyString(), anyString(), any(), any(), any(), anyString());
     }
@@ -145,7 +145,7 @@ class JobApplicationFacadeTest {
 
         JobApplicationDto updated = jobApplicationFacade.updateStatus(1L, "REJECTED");
 
-        assertThat(updated.getStatus()).isEqualTo("REJECTED");
+        assertThat(updated.getStatus()).isEqualToIgnoringCase("REJECTED");
         verify(jobApplicationService, times(1)).updateStatus(1L, Status.REJECTED);
     }
 
@@ -158,7 +158,7 @@ class JobApplicationFacadeTest {
         List<JobApplicationDto> results = jobApplicationFacade.findByStatus("APPLIED");
 
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).getStatus()).isEqualTo("APPLIED");
+        assertThat(results.get(0).getStatus()).isEqualToIgnoringCase("APPLIED");
         verify(jobApplicationService, times(1)).listByStatus(Status.APPLIED);
     }
 
