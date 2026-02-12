@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +33,6 @@ import com.mtripode.jobapp.facade.facade.NoteFacade;
 import com.mtripode.jobapp.facade.facade.impl.JobApplicationFacadeImpl;
 import com.mtripode.jobapp.service.service.note.dto.Comment;
 import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
 
@@ -67,7 +66,7 @@ public class JobApplicationController {
             String content = "This is the content for the title " + title;
             List<Comment> comments = new ArrayList<>();
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(created.getId(), title, content, comments);
-            if (Objects.nonNull(dto)) {
+            if (Objects.nonNull(noteDto)) {
                 log.info("Created note for application: {}", noteDto.toString());
             }
         }
@@ -108,7 +107,7 @@ public class JobApplicationController {
             comment.setMessage("Jobapplication Udpated");
             comments.add(comment);
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(update.getId(), title, content, comments);
-            if (Objects.nonNull(dto)) {
+            if (Objects.nonNull(noteDto)) {
                 log.info("Created note for update application: {}", noteDto.toString());
             }
         }

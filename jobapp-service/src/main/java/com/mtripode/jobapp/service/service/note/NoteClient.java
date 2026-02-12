@@ -2,6 +2,7 @@ package com.mtripode.jobapp.service.service.note;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,10 +16,12 @@ public class NoteClient {
 
     private final WebClient webClient;
 
-    public NoteClient(WebClient.Builder builder) {
-        this.webClient = builder.baseUrl("http://localhost:8082/notes").build();
+    public NoteClient(WebClient.Builder builder,
+            @Value("${note.service.base-url:http://localhost/notes:8082}") String baseUrl) {
+        this.webClient = builder.baseUrl(baseUrl).build();
     }
 
+    
     public NoteDTO createNoteForApplication(Long applicationId, String title, String content, List<Comment> comments) {
         NoteDTO dto = new NoteDTO();
         dto.setApplicationId(applicationId);
