@@ -54,4 +54,12 @@ public class CompanyFacadeImpl implements CompanyFacade {
     public void deleteCompany(Long id) {
         companyService.deleteCompany(id);
     }
+
+    @Override
+    @CacheEvict(value = "companies", key = "#name", allEntries = true)
+    public Optional<CompanyDto> findByNameIgnoreCase(String name) {
+        return companyService.findByNameIgnoreCase(name)
+                .map(companyMapper::toDto);
+    }
+
 }

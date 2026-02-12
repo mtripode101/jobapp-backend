@@ -2,6 +2,8 @@ package com.mtripode.jobapp.service.service.note;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,14 +16,19 @@ import reactor.core.publisher.Mono;
 @Component
 public class NoteClient {
 
+    private static final Logger log = LoggerFactory.getLogger(NoteClient.class);
+
     private final WebClient webClient;
 
     public NoteClient(WebClient.Builder builder,
-            @Value("${note.service.base-url:http://localhost/notes:8082}") String baseUrl) {
+            @Value("${note.service.base-url:http://localhost:8082/notes}") String baseUrl) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new IllegalArgumentException("The URL for the Note Service is not configured.");
+        }
+        log.info("Initiatin NoteClient with baseUrl={}", baseUrl);
         this.webClient = builder.baseUrl(baseUrl).build();
     }
 
-    
     public NoteDTO createNoteForApplication(Long applicationId, String title, String content, List<Comment> comments) {
         NoteDTO dto = new NoteDTO();
         dto.setApplicationId(applicationId);
