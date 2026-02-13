@@ -68,6 +68,7 @@ public class JobApplicationController {
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(created.getId(), title, content, comments);
             if (Objects.nonNull(noteDto)) {
                 log.info("Created note for application: {}", noteDto.toString());
+                created.setNote(noteDto);
             }
         }
 
@@ -90,6 +91,7 @@ public class JobApplicationController {
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(applyRejected.getId(), title, content, comments);
             if (Objects.nonNull(dto)) {
                 log.info("Created note for rejected application: {}", noteDto.toString());
+                applyRejected.setNote(noteDto);
             }
         }
         return ResponseEntity.ok(applyRejected);
@@ -109,6 +111,7 @@ public class JobApplicationController {
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(update.getId(), title, content, comments);
             if (Objects.nonNull(noteDto)) {
                 log.info("Created note for update application: {}", noteDto.toString());
+                update.setNote(noteDto);
             }
         }
         return ResponseEntity.ok(update);
