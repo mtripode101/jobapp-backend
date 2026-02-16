@@ -98,9 +98,9 @@ public class JobApplicationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplicationDto> update(@PathVariable Long id, @RequestBody JobApplicationDto dto) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody JobApplicationDto dto) {
         JobApplicationDto update = this.jobApplicationFacade.update(id, dto);
-        if (Objects.nonNull(update)) {
+        if (Objects.nonNull(update) && Objects.isNull(update.getError())) {
             String title = "JobApplication updated for id " + update.getId();
             String content = "This is the content for the title " + title;
             List<Comment> comments = new ArrayList<>();
@@ -113,7 +113,20 @@ public class JobApplicationController {
                 log.info("Created note for update application: {}", noteDto.toString());
                 update.setNote(noteDto);
             }
+        } else {
+            StringBuilder errorMessage = new StringBuilder();
+            if (Objects.nonNull(update) && Objects.nonNull(update.getError())) {
+                errorMessage.append(update.getError().getMessage());
+
+            } else {
+                errorMessage.append("JobApplication with id " + id + " not found or could not be updated.");
+
+            }
+
+            ErrorResponse error = new ErrorResponse(errorMessage.toString(), HttpStatus.NOT_FOUND.value());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
+
         return ResponseEntity.ok(update);
     }
 
@@ -177,9 +190,16 @@ public class JobApplicationController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<JobApplicationDto> updateStatus(@PathVariable Long id, @RequestParam String newStatus
+    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam String newStatus
     ) {
-        return ResponseEntity.ok(jobApplicationFacade.updateStatus(id, newStatus));
+        JobApplicationDto updated = jobApplicationFacade.updateStatus(id, newStatus);
+        if (Objects.isNull(updated)) {
+            String errorMessage = "Invalid status transition for application with id " + id + " to status " + newStatus;
+            log.error(errorMessage);
+            ErrorResponse error = new ErrorResponse(errorMessage, HttpStatus.BAD_REQUEST.value());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/status/{status}")

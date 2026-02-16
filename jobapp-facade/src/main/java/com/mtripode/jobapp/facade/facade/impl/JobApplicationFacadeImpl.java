@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import com.mtripode.jobapp.facade.dto.ErrorResponse;
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.facade.JobApplicationFacade;
 import com.mtripode.jobapp.facade.mapper.JobApplicationMapper;
@@ -63,10 +64,19 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     @Override
     @CacheEvict(value = "jobs-applications", key = "#dto.jobId", allEntries = true)
     public JobApplicationDto update(Long id, JobApplicationDto dto) {
-        JobApplication entity = JobApplicationMapper.toEntity(dto);
-        JobApplication saved = jobApplicationService.update(entity.getId(), entity);
-
-        return JobApplicationMapper.toDto(saved);
+        JobApplication saved = null;
+        ErrorResponse error = null;
+        JobApplicationDto updatedDto = null;
+        try {
+            JobApplication entity = JobApplicationMapper.toEntity(dto);
+            saved = jobApplicationService.update(entity.getId(), entity);
+            updatedDto = JobApplicationMapper.toDto(saved);
+        } catch (Exception e) {
+            updatedDto = new JobApplicationDto();
+            error = new ErrorResponse(e.getMessage(), 400);
+        }
+        updatedDto.setError(error);
+        return updatedDto;
     }
 
     @Override
@@ -102,7 +112,12 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
     @Override
     @CacheEvict(value = "jobs-applications", key = "#id", allEntries = true)
     public JobApplicationDto updateStatus(Long id, String newStatus) {
-        JobApplication updated = jobApplicationService.updateStatus(id, Status.valueOf(newStatus));
+        JobApplication updated = null;
+        try {
+            updated = jobApplicationService.updateStatus(id, Status.valueOf(newStatus));
+        } catch (IllegalStateException e) {
+            return null;
+        }
         return JobApplicationMapper.toDto(updated);
     }
 
