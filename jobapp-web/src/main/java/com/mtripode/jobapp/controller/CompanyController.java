@@ -40,6 +40,13 @@ public class CompanyController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{name}/search")
+    public ResponseEntity<CompanyDto> getCompanyByName(@PathVariable String name) {
+        return companyFacade.findByNameIgnoreCase(name)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<CompanyDto> createCompany(@RequestBody CompanyDto companyDto) {
         return ResponseEntity.ok(companyFacade.saveCompany(companyDto));

@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
+
 public class JobApplicationDto extends BaseDto implements Serializable {
 
     private String sourceLink;
@@ -18,6 +20,7 @@ public class JobApplicationDto extends BaseDto implements Serializable {
     private LocalDate  dateApplied;
     private List<JobOfferDTO> offers;
     private List<InterviewDto> interviews;
+    private NoteDTO note;
     private static final long serialVersionUID = 1L;
 
     public JobApplicationDto() {
@@ -129,6 +132,15 @@ public class JobApplicationDto extends BaseDto implements Serializable {
     public void setInterviews(List<InterviewDto> interviews) {
         this.interviews = interviews;
     }
+
+    public NoteDTO getNote() {
+        return note;
+    }
+
+    public void setNote(NoteDTO note) {
+        this.note = note;
+    }
+
 
     
 }

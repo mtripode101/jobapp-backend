@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.mtripode.jobapp.facade.dto.JobApplicationDto;
 import com.mtripode.jobapp.facade.facade.NoteFacade;
@@ -15,6 +16,7 @@ import com.mtripode.jobapp.service.service.note.NoteClient;
 import com.mtripode.jobapp.service.service.note.dto.Comment;
 import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
 
+@Component
 public class NoteFacadeImpl implements NoteFacade {
 
     private static final Logger log = LoggerFactory.getLogger(NoteFacadeImpl.class);
@@ -37,8 +39,8 @@ public class NoteFacadeImpl implements NoteFacade {
         }
         try {
             noteDto = noteClient.createNoteForApplication(jobApplicationOptional.get().getId(),
-                    "Application created",
-                    "Job application applyToJob for jobId: " + jobApplicationOptional.get().getId(), comments);
+                    title,
+                    content, comments);
         } catch (Exception e) {
             // Log the error but do not break the main flow
             log.warn("Failed to create note for application {}: {}", jobApplicationOptional.get().getId(), e.getMessage());
@@ -56,12 +58,29 @@ public class NoteFacadeImpl implements NoteFacade {
         }
         try {
             notes = noteClient.getNotesForApplication(jobApplicationOptional.get().getId());
-            log.info("Notes for id "+notes.toString());
-        } catch (Exception e) {  
+            log.info("Notes for id " + notes.toString());
+        } catch (Exception e) {
             // Log the error but do not break the main flow
             log.warn("Failed to findById note for application {}: {}", jobApplicationOptional.get().getId(), e.getMessage());
         }
 
         return notes;
+    }
+
+    @Override
+    public boolean deleteNotesForApplication(Long applicationId) {
+        Optional<JobApplicationDto> jobApplicationOptional = jobApplicationService.findById(applicationId).map(JobApplicationMapper::toDto);
+        if (jobApplicationOptional.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return noteClient.deleteNotesForApplication(jobApplicationOptional.get().getId());
+        } catch (Exception e) {
+            // Log the error but do not break the main flow
+            log.warn("Failed to delete notes for application {}: {}", jobApplicationOptional.get().getId(), e.getMessage());
+            return false;
+        }
+
     }
 }

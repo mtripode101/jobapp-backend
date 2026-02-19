@@ -2,19 +2,31 @@ package com.mtripode.jobapp.service.service.note;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.mtripode.jobapp.service.service.note.dto.Comment;
 import com.mtripode.jobapp.service.service.note.dto.NoteDTO;
 
+import reactor.core.publisher.Mono;
+
 @Component
 public class NoteClient {
 
+    private static final Logger log = LoggerFactory.getLogger(NoteClient.class);
+
     private final WebClient webClient;
 
-    public NoteClient(WebClient.Builder builder) {
-        this.webClient = builder.baseUrl("http://localhost:8082/notes").build();
+    public NoteClient(WebClient.Builder builder,
+            @Value("${note.service.base-url:http://localhost:8082/notes}") String baseUrl) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new IllegalArgumentException("The URL for the Note Service is not configured.");
+        }
+        log.info("Initiatin NoteClient with baseUrl={}", baseUrl);
+        this.webClient = builder.baseUrl(baseUrl).build();
     }
 
     public NoteDTO createNoteForApplication(Long applicationId, String title, String content, List<Comment> comments) {
@@ -23,7 +35,7 @@ public class NoteClient {
         dto.setTitle(title);
         dto.setContent(content);
         dto.setComments(comments);
-        
+
         return webClient.post()
                 .uri("/{id}/notes", applicationId)
                 .bodyValue(dto)
@@ -40,4 +52,12 @@ public class NoteClient {
                 .collectList()
                 .block();
     }
+
+    public boolean deleteNotesForApplication(Long applicationId) {
+        return webClient.delete()
+                .uri("/application/{id}", applicationId)
+                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
+                .block();
+    }
+
 }

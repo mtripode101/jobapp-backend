@@ -26,7 +26,7 @@ public class PositionFacadeImpl implements PositionFacade {
     }
 
     @Override
-    @CacheEvict(value = {"positions", "jobs-applications"}, key = "#result.id")
+    @CacheEvict(value = {"positions", "jobs-applications"}, key = "#result.id", allEntries = true)
     public PositionDto savePosition(PositionDto dto) {
         Position position = positionMapper.toEntity(dto);
         Position saved = positionService.savePosition(position);
@@ -49,7 +49,7 @@ public class PositionFacadeImpl implements PositionFacade {
     }
 
     @Override
-    @CacheEvict(value = "positions", key = "#id")
+    @CacheEvict(value = "positions", key = "#id", allEntries = true)
     public void deleteById(Long id) {
         positionService.deleteById(id);
     }
@@ -100,7 +100,7 @@ public class PositionFacadeImpl implements PositionFacade {
     }
 
     @Override
-    @CacheEvict(value = {"positions", "jobs-applications"}, key = "#id")
+    @CacheEvict(value = {"positions", "jobs-applications"}, key = "#id", allEntries = true)
     public PositionDto updatePosition(Long id, PositionDto dto) {
         Position position = positionMapper.toEntity(dto);
         Position updated = positionService.updatePosition(id, position);

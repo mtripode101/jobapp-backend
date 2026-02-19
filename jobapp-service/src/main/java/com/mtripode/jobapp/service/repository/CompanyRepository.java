@@ -20,4 +20,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     List<Company> findByNameStartingWithIgnoreCase(String prefix);
 
     List<Company> findByNameEndingWithIgnoreCase(String suffix);
+
+    Optional<Company> findByNameIgnoreCase(String name);
+
 }

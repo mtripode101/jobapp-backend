@@ -10,6 +10,7 @@ public abstract class BaseDto {
     private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private ErrorResponse error;
 
     // Getters and setters
     public Long getId() {
@@ -35,4 +36,14 @@ public abstract class BaseDto {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public ErrorResponse getError() {
+        return error;
+    }
+
+    public void setError(ErrorResponse error) {
+        this.error = error;
+    }
+
+    
 }

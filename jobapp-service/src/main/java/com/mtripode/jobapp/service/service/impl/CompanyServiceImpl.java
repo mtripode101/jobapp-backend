@@ -49,5 +49,10 @@ public class CompanyServiceImpl implements CompanyService{
         companyRepository.deleteById(id);
     }
 
+    @Override
+    public Optional<Company> findByNameIgnoreCase(String name) {
+        return companyRepository.findByNameIgnoreCase(name);
+    }
+
 }
 

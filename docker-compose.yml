@@ -39,6 +39,7 @@ services:
       JAVA_OPTS: "-Xms256m -Xmx512m"
       SPRING_REDIS_HOST: "redis"
       SPRING_REDIS_PORT: "6379"
+      NOTE_SERVICE_URL: "http://jobapp-mongodb-backend:8080/notes"
     ports:
       - "8080:8080"
     restart: on-failure
