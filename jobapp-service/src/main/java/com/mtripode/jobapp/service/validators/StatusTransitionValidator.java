@@ -15,8 +15,8 @@ public class StatusTransitionValidator {
         validTransitions.put(Status.INTERVIEW_SCHEDULED, EnumSet.of(Status.INTERVIEWED, Status.REJECTED));
         validTransitions.put(Status.INTERVIEWED, EnumSet.of(Status.OFFERED, Status.REJECTED));
         validTransitions.put(Status.OFFERED, EnumSet.of(Status.HIRED, Status.REJECTED));
-        validTransitions.put(Status.HIRED, EnumSet.noneOf(Status.class));     // estado final
-        validTransitions.put(Status.REJECTED, EnumSet.noneOf(Status.class));  // estado final
+        validTransitions.put(Status.HIRED, EnumSet.noneOf(Status.class));    
+        validTransitions.put(Status.REJECTED, EnumSet.of(Status.REJECTED)); 
     }
 
     public static boolean canTransition(Status from, Status to) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +68,10 @@ public class JobApplicationController {
             List<Comment> comments = new ArrayList<>();
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(created.getId(), title, content, comments);
             if (Objects.nonNull(noteDto)) {
+                List<NoteDTO> notes = new ArrayList<>();
+                notes.add(noteDto);
                 log.info("Created note for application: {}", noteDto.toString());
-                created.setNote(noteDto);
+                created.setNotes(notes);
             }
         }
 
@@ -91,7 +94,9 @@ public class JobApplicationController {
             NoteDTO noteDto = this.noteFacade.createNoteForApplication(applyRejected.getId(), title, content, comments);
             if (Objects.nonNull(dto)) {
                 log.info("Created note for rejected application: {}", noteDto.toString());
-                applyRejected.setNote(noteDto);
+                List<NoteDTO> notes = new ArrayList<>();
+                notes.add(noteDto);
+                applyRejected.setNotes(notes);
             }
         }
         return ResponseEntity.ok(applyRejected);
@@ -101,18 +106,9 @@ public class JobApplicationController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody JobApplicationDto dto) {
         JobApplicationDto update = this.jobApplicationFacade.update(id, dto);
         if (Objects.nonNull(update) && Objects.isNull(update.getError())) {
-            String title = "JobApplication updated for id " + update.getId();
-            String content = "This is the content for the title " + title;
-            List<Comment> comments = new ArrayList<>();
-            Comment comment = new Comment();
-            comment.setAuthor(update.getCandidate().getFullName());
-            comment.setMessage("Jobapplication Udpated");
-            comments.add(comment);
-            NoteDTO noteDto = this.noteFacade.createNoteForApplication(update.getId(), title, content, comments);
-            if (Objects.nonNull(noteDto)) {
-                log.info("Created note for update application: {}", noteDto.toString());
-                update.setNote(noteDto);
-            }
+            log.info("checking notes {}", dto.getNotes());
+            processExtraNotes(dto, update);
+
         } else {
             StringBuilder errorMessage = new StringBuilder();
             if (Objects.nonNull(update) && Objects.nonNull(update.getError())) {
@@ -136,6 +132,7 @@ public class JobApplicationController {
         if (application.isPresent()) {
             List<NoteDTO> notesDto = this.noteFacade.getNotesForApplication(application.get().getId());
             notesDto.stream().forEach(note -> System.err.println("note " + note.toString()));
+            application.get().setNotes(notesDto);
         }
         return application.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
@@ -235,6 +232,37 @@ public class JobApplicationController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private void processExtraNotes(JobApplicationDto dto, JobApplicationDto jobApplicationDto) {
+        if (dto.getNotes() == null || dto.getNotes().isEmpty()) {
+            log.info("No notes provided for application {}, skipping note creation", jobApplicationDto.getId());
+            return;
+        }
+
+        List<NoteDTO> existingNotes = noteFacade.getNotesForApplication(jobApplicationDto.getId());
+        List<NoteDTO> finalNotes = new ArrayList<>();
+
+        for (NoteDTO incoming : dto.getNotes()) {
+            // If note has an ID and exists, reuse it
+            boolean alreadyExists = existingNotes.stream()
+                    .anyMatch(n -> n.getId().equals(incoming.getId()));
+
+            if (alreadyExists) {
+                finalNotes.add(incoming); // keep existing
+            } else {
+                // Only create if it's new (id == null)
+                NoteDTO created = noteFacade.createNoteForApplication(
+                        jobApplicationDto.getId(),
+                        incoming.getTitle(),
+                        incoming.getContent(),
+                        incoming.getComments()
+                );
+                finalNotes.add(created);
+            }
+        }
+
+        jobApplicationDto.setNotes(finalNotes);
     }
 
 }

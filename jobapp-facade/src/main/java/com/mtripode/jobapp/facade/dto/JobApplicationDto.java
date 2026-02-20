@@ -20,7 +20,7 @@ public class JobApplicationDto extends BaseDto implements Serializable {
     private LocalDate  dateApplied;
     private List<JobOfferDTO> offers;
     private List<InterviewDto> interviews;
-    private NoteDTO note;
+    private List<NoteDTO> notes;
     private static final long serialVersionUID = 1L;
 
     public JobApplicationDto() {
@@ -133,14 +133,11 @@ public class JobApplicationDto extends BaseDto implements Serializable {
         this.interviews = interviews;
     }
 
-    public NoteDTO getNote() {
-        return note;
+    public List<NoteDTO> getNotes() {
+        return notes;
     }
 
-    public void setNote(NoteDTO note) {
-        this.note = note;
+    public void setNotes(List<NoteDTO> notes) {
+        this.notes = notes;
     }
-
-
-    
 }
