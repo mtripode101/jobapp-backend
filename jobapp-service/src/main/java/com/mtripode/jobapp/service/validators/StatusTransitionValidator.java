@@ -11,10 +11,10 @@ public class StatusTransitionValidator {
     private static final EnumMap<Status, Set<Status>> validTransitions = new EnumMap<>(Status.class);
 
     static {
-        validTransitions.put(Status.APPLIED, EnumSet.of(Status.INTERVIEW_SCHEDULED, Status.REJECTED));
-        validTransitions.put(Status.INTERVIEW_SCHEDULED, EnumSet.of(Status.INTERVIEWED, Status.REJECTED));
-        validTransitions.put(Status.INTERVIEWED, EnumSet.of(Status.OFFERED, Status.REJECTED));
-        validTransitions.put(Status.OFFERED, EnumSet.of(Status.HIRED, Status.REJECTED));
+        validTransitions.put(Status.APPLIED, EnumSet.of(Status.INTERVIEW_SCHEDULED, Status.REJECTED, Status.APPLIED));
+        validTransitions.put(Status.INTERVIEW_SCHEDULED, EnumSet.of(Status.INTERVIEWED, Status.REJECTED, Status.INTERVIEW_SCHEDULED));
+        validTransitions.put(Status.INTERVIEWED, EnumSet.of(Status.OFFERED, Status.REJECTED, Status.INTERVIEWED));
+        validTransitions.put(Status.OFFERED, EnumSet.of(Status.HIRED, Status.REJECTED,Status.OFFERED));
         validTransitions.put(Status.HIRED, EnumSet.noneOf(Status.class));    
         validTransitions.put(Status.REJECTED, EnumSet.of(Status.REJECTED)); 
     }
