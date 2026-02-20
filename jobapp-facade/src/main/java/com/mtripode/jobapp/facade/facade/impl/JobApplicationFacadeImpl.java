@@ -70,6 +70,7 @@ public class JobApplicationFacadeImpl implements JobApplicationFacade {
         try {
             JobApplication entity = JobApplicationMapper.toEntity(dto);
             saved = jobApplicationService.update(entity.getId(), entity);
+
             updatedDto = JobApplicationMapper.toDto(saved);
         } catch (Exception e) {
             updatedDto = new JobApplicationDto();
