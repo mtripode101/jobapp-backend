@@ -1,31 +1,31 @@
 services:
   db:
     image: mysql:8.0
-    container_name: jobapp-mysql-dev
+    container_name: jobapp-mysql-local
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: "e12345678E"
-      MYSQL_DATABASE: "jobapp_db"
+      MYSQL_DATABASE: "jobapp_db_local"
       MYSQL_USER: "jobapp"
       MYSQL_PASSWORD: "jobappPass123"
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3307:3306"
+      - "3308:3306"
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -pe12345678E || exit 1"]
       interval: 20s
       timeout: 10s
       retries: 20
     networks:
-      - jobapp-net
+      - jobapp-net-local
 
   redis:
     image: redis:6-alpine
-    container_name: jobapp-redis-dev
+    container_name: jobapp-redis-local
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -34,30 +34,30 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - jobapp-net
+      - jobapp-net-local
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: jobapp-backend:dev
-    container_name: jobapp-backend-dev
+    image: jobapp-backend:local
+    container_name: jobapp-backend-local
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/jobapp_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/jobapp_db_local?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
       SPRING_DATASOURCE_USERNAME: "root"
       SPRING_DATASOURCE_PASSWORD: "e12345678E"
-      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_PROFILES_ACTIVE: "local"
       JAVA_OPTS: "-Xms256m -Xmx512m"
       SPRING_REDIS_HOST: "redis"
       SPRING_REDIS_PORT: "6379"
       NOTE_SERVICE_URL: "http://jobapp-mongodb-backend:8080/notes"
     ports:
-      - "8080:8080"
+      - "8090:8080"
     restart: on-failure
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
@@ -65,14 +65,14 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - jobapp-net
+      - jobapp-net-local
 
 volumes:
   db_data:
-    name: jobapp-dev-db_data
+    name: jobapp-local-db_data
   redis_data:
-    name: jobapp-dev-redis_data
+    name: jobapp-local-redis_data
 
 networks:
-  jobapp-net:
+  jobapp-net-local:
     external: true
