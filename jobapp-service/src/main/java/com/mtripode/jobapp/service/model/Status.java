@@ -2,7 +2,7 @@ package com.mtripode.jobapp.service.model;
 
 public enum Status {
     APPLIED("Applied"),
-    INTERVIEW_SCHEDULED("Interview Scheduled"),
+    INTERVIEW_SCHEDULED("Interview_Scheduled"),
     INTERVIEWED("Interviewed"),
     OFFERED("Offered"),
     HIRED("Hired"),
