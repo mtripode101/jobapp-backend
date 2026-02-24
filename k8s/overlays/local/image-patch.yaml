@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: jobapp
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          image: jobapp-backend:local

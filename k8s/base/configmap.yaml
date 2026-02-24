@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: jobapp
+data:
+  SPRING_PROFILES_ACTIVE: "dev"
+
+  MYSQL_HOST: "mysql"
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "jobapp_db"
+
+  REDIS_HOST: "redis-master"
+  REDIS_PORT: "6379"
+
+  NOTE_SERVICE_URL: "http://mongodb-backend:8080/notes"

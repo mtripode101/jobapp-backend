@@ -1,45 +1,45 @@
-#backend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jobapp-backend
+  name: backend
+  namespace: jobapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: jobapp-backend
+      app: backend
   template:
     metadata:
       labels:
-        app: jobapp-backend
+        app: backend
     spec:
       containers:
         - name: backend
-          image: jobapp-backend:latest
+          image: jobapp-backend:dev
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef:
-                name: jobapp-config
-            - secretRef:
-                name: jobapp-secrets
+                name: backend-config
+          env:
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: MYSQL_USERNAME
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: MYSQL_PASSWORD
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
             initialDelaySeconds: 10
-            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
             initialDelaySeconds: 30
-            periodSeconds: 20
-          resources:
-            requests:
-              cpu: "250m"
-              memory: "256Mi"
-            limits:
-              cpu: "1"
-              memory: "512Mi"
