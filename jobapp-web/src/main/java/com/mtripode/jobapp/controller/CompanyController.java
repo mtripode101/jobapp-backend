@@ -59,8 +59,14 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
-        companyFacade.deleteCompany(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteCompany(@PathVariable Long id) {
+        try {
+            companyFacade.deleteCompany(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(500)
+                    .body("The company could not be deleted.");
+        }
     }
 }
