@@ -27,70 +27,57 @@ public class JobOfferServiceImpl implements JobOfferService {
         this.jobApplicationRepository = jobApplicationRepository;
     }
 
-    // Save or update a job offer
     @Override
     public JobOffer saveJobOffer(JobOffer jobOffer) {
         return jobOfferRepository.save(jobOffer);
     }
 
-    // Create and attach a new offer to an application
     @Override
     public JobOffer createOffer(Long applicationId, LocalDate offeredAt, JobOfferStatus status) {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found with id " + applicationId));
 
         JobOffer offer = new JobOffer(offeredAt, status, application);
-        application.addOffer(offer); // maintain bidirectional relationship
+        application.addOffer(offer);
         jobApplicationRepository.save(application);
-
         return offer;
-        //return jobOfferRepository.save(offer);
     }
 
-    // Find job offer by ID
     @Override
     public Optional<JobOffer> findById(Long id) {
         return jobOfferRepository.findById(id);
     }
 
-    // Find all job offers
     @Override
     public List<JobOffer> findAll() {
         return jobOfferRepository.findAll();
     }
 
-    // Delete job offer by ID
     @Override
     public void deleteById(Long id) {
         jobOfferRepository.deleteById(id);
     }
 
-    // Find job offers by status
     @Override
     public List<JobOffer> findByStatus(JobOfferStatus status) {
         return jobOfferRepository.findByStatus(status);
     }
 
-    // Find job offers made after a specific date
     @Override
     public List<JobOffer> findByOfferedAtAfter(LocalDate date) {
         return jobOfferRepository.findByOfferedAtAfter(date);
     }
 
-    // Find job offers made before a specific date
     @Override
     public List<JobOffer> findByOfferedAtBefore(LocalDate date) {
         return jobOfferRepository.findByOfferedAtBefore(date);
     }
 
-    // Find job offers linked to a specific job application
     @Override
     public List<JobOffer> findByApplicationId(Long applicationId) {
         return jobOfferRepository.findByApplication_Id(applicationId);
     }
 
-    // --- Extra convenience methods ---
-    // Accept an offer
     @Override
     public JobOffer acceptOffer(Long offerId) {
         JobOffer offer = jobOfferRepository.findById(offerId)
@@ -99,7 +86,6 @@ public class JobOfferServiceImpl implements JobOfferService {
         return jobOfferRepository.save(offer);
     }
 
-    // Reject an offer
     @Override
     public JobOffer rejectOffer(Long offerId) {
         JobOffer offer = jobOfferRepository.findById(offerId)
@@ -155,15 +141,12 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     @Override
     public List<JobOffer> findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(Double expectedMax, Double offeredMin) {
-        return jobOfferRepository.findByExpectedSalaryGreaterThanAndOfferedSalaryLessThan(offeredMin, expectedMax);
+        return jobOfferRepository.findByExpectedSalaryLessThanAndOfferedSalaryGreaterThan(expectedMax, offeredMin);
     }
 
     @Override
     public List<JobOffer> findByExpectedSalaryEqualsOfferedSalary() {
-        List<JobOffer> allOffers = jobOfferRepository.findAll();
-        return allOffers.stream()
-                .filter(offer -> offer.getExpectedSalary() != null && offer.getExpectedSalary().equals(offer.getOfferedSalary()))
-                .toList();
+        return jobOfferRepository.findByExpectedSalaryEqualsOfferedSalary();
     }
 
     public JobOfferRepository getJobOfferRepository() {
