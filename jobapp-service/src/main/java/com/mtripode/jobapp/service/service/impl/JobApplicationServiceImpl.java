@@ -36,13 +36,11 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     private static final Logger log = LoggerFactory.getLogger(JobApplicationServiceImpl.class);
 
     private final JobApplicationRepository jobApplicationRepository;
-
     private final JobOfferService jobOfferService;
-
     private final CacheUtilService cacheUtilService;
 
-
-    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService, CacheUtilService cacheUtilService) {
+    public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService,
+            CacheUtilService cacheUtilService) {
         this.jobApplicationRepository = jobApplicationRepository;
         this.jobOfferService = jobOfferService;
         this.cacheUtilService = cacheUtilService;
@@ -51,18 +49,13 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @PostConstruct
     public void init() {
         System.out.println("JobApplicationServiceImpl initialized");
-        // e.g., warm caches, validate config
     }
 
     @PreDestroy
     public void shutdown() {
         System.out.println("JobApplicationServiceImpl shutting down");
-        // e.g., close resources
     }
 
-    /**
-     * Apply to a job with candidate, company, and position details.
-     */
     @Override
     public JobApplication applyToJob(String sourceLink, String websiteSource, String description,
             Candidate candidate, Company company, Position position, String jobId) {
@@ -75,15 +68,10 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 company,
                 position,
                 Status.APPLIED,
-                jobId
-        );
-         return jobApplicationRepository.save(application);
-
+                jobId);
+        return jobApplicationRepository.save(application);
     }
 
-    /**
-     * Reject an existing application by ID.
-     */
     @Override
     public JobApplication rejectApplication(Long id) {
         Optional<JobApplication> optional = jobApplicationRepository.findById(id);
@@ -96,9 +84,6 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         throw new IllegalArgumentException("Application not found with id " + id);
     }
 
-    /**
-     * Update the status of an application with validation.
-     */
     @Override
     public JobApplication updateStatus(Long id, Status newStatus) {
         JobApplication app = jobApplicationRepository.findById(id)
@@ -117,9 +102,6 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return jobApplicationRepository.save(app);
     }
 
-    /**
-     * Create a rejected application directly.
-     */
     @Override
     public JobApplication applyRejected(String sourceLink, String websiteSource, String description,
             Candidate candidate, Company company, Position position, String jobId) {
@@ -132,8 +114,7 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 company,
                 position,
                 Status.REJECTED,
-                jobId
-        );
+                jobId);
         application.setDateRejected(LocalDate.now());
         return jobApplicationRepository.save(application);
     }
@@ -143,51 +124,42 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     public JobApplication update(Long id, JobApplication updateJobApplication) {
         List<JobOffer> applicationOffers = jobOfferService.findByApplicationId(id);
 
-        JobOfferStatus jobOfferStatus = JobOfferStatus.PENDING;
         if (updateJobApplication.getStatus() == Status.REJECTED) {
-            jobOfferStatus = JobOfferStatus.REJECTED;
+            for (JobOffer offer : applicationOffers) {
+                if (offer.getStatus() != JobOfferStatus.REJECTED) {
+                    offer.setStatus(JobOfferStatus.REJECTED);
+                    jobOfferService.saveJobOffer(offer);
+                }
+            }
+            if (!applicationOffers.isEmpty()) {
+                cacheUtilService.clearCache("job-offers");
+            }
         }
-
-        for (JobOffer offer : applicationOffers) {
-            offer.setStatus(jobOfferStatus);
-            jobOfferService.saveJobOffer(offer);
-        }
-
-        cacheUtilService.clearCache("job-offers");
 
         updateJobApplication.setId(id);
         updateJobApplication.setOffers(applicationOffers);
 
         if (updateJobApplication.getInterviews() != null) {
-            updateJobApplication.getInterviews()
-                    .forEach(interview -> interview.setApplication(updateJobApplication));
+            updateJobApplication.getInterviews().forEach(interview -> interview.setApplication(updateJobApplication));
         }
 
         if (updateJobApplication.getOffers() != null) {
-            updateJobApplication.getOffers()
-                    .forEach(offer -> offer.setApplication(updateJobApplication));
+            updateJobApplication.getOffers().forEach(offer -> offer.setApplication(updateJobApplication));
         }
 
         return jobApplicationRepository.save(updateJobApplication);
     }
 
-    /**
-     * List applications by status.
-     */
     @Override
     public List<JobApplication> listByStatus(Status status) {
         return jobApplicationRepository.findByStatus(status);
     }
 
-    /**
-     * List all applications.
-     */
     @Override
     public List<JobApplication> listAll() {
         return jobApplicationRepository.findAll();
     }
 
-    // simple async wrapper that runs repository call in the configured executor
     @Async("taskExecutor")
     @Override
     public CompletableFuture<List<JobApplication>> listAllAsync() {
@@ -195,7 +167,6 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return CompletableFuture.completedFuture(result);
     }
 
-    // --- Additional query methods merged from repository ---
     @Override
     public List<JobApplication> listByCompanyName(String companyName) {
         return jobApplicationRepository.findByCompany_Name(companyName);
@@ -241,18 +212,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         return jobApplicationRepository.findByCompany_NameAndStatus(companyName, status);
     }
 
-    /**
-     * Find application by ID.
-     */
     @Override
     public Optional<JobApplication> findById(Long id) {
         Optional<JobApplication> jobOptional = jobApplicationRepository.findById(id);
         return jobOptional;
     }
 
-    /**
-     * Delete application by ID.
-     */
     @Override
     public void deleteById(Long id) {
         if (!jobApplicationRepository.existsById(id)) {

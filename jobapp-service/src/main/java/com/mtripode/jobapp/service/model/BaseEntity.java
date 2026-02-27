@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.ClassUtils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -29,7 +30,6 @@ public abstract class BaseEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // --- Getters & Setters ---
     public Long getId() {
         return id;
     }
@@ -54,21 +54,27 @@ public abstract class BaseEntity {
         this.updatedAt = updatedAt;
     }
 
-    // --- equals & hashCode ---
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof BaseEntity)) {
+        if (o == null) {
             return false;
         }
+
+        Class<?> thisClass = ClassUtils.getUserClass(this);
+        Class<?> otherClass = ClassUtils.getUserClass(o);
+        if (!thisClass.equals(otherClass)) {
+            return false;
+        }
+
         BaseEntity that = (BaseEntity) o;
         return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return 31;
+        return id != null ? id.hashCode() : 31;
     }
 }
