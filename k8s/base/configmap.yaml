@@ -5,12 +5,9 @@ metadata:
   namespace: jobapp
 data:
   SPRING_PROFILES_ACTIVE: "dev"
+  SPRING_CACHE_TYPE: "simple"
+  MANAGEMENT_HEALTH_REDIS_ENABLED: "false"
 
-  MYSQL_HOST: "mysql"
-  MYSQL_PORT: "3306"
-  MYSQL_DATABASE: "jobapp_db"
-
-  REDIS_HOST: "redis-master"
-  REDIS_PORT: "6379"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/jobapp_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 
   NOTE_SERVICE_URL: "http://mongodb-backend:8080/notes"
