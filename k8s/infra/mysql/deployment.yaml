@@ -24,13 +24,20 @@ spec:
                 name: mysql-secret
           args:
             - --default-authentication-plugin=mysql_native_password
+          startupProbe:
+            tcpSocket:
+              port: 3306
+            periodSeconds: 5
+            failureThreshold: 60
           readinessProbe:
             tcpSocket:
               port: 3306
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 5
+            failureThreshold: 12
           livenessProbe:
             tcpSocket:
               port: 3306
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            failureThreshold: 5
