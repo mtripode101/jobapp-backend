@@ -26,14 +26,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.debug
-    image: jobapp-backend:local
-    container_name: jobapp-backend
+    image: jobapp-backend:dev
+    container_name: jobapp-backend-dev
     depends_on:
       - db
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/jobapp_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
       SPRING_DATASOURCE_USERNAME: "jobapp"
       SPRING_DATASOURCE_PASSWORD: "jobappPass123"
+      SPRING_REDIS_HOST: "jobapp-redis-dev"
+      SPRING_REDIS_PORT: "6379"
       SPRING_PROFILES_ACTIVE: "dev"
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
@@ -56,4 +58,4 @@ volumes:
 
 networks:
   jobapp-net:
-    driver: bridge
+    external: true
