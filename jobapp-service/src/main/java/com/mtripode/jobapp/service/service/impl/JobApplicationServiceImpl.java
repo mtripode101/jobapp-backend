@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mtripode.jobapp.service.cache.CacheUtilService;
+import com.mtripode.jobapp.service.event.EventType;
+import com.mtripode.jobapp.service.event.JobAppEvent;
+import com.mtripode.jobapp.service.event.KafkaEventPublisher;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.JobApplication;
@@ -38,12 +41,14 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     private final JobApplicationRepository jobApplicationRepository;
     private final JobOfferService jobOfferService;
     private final CacheUtilService cacheUtilService;
+    private final KafkaEventPublisher kafkaEventPublisher;
 
     public JobApplicationServiceImpl(JobApplicationRepository jobApplicationRepository, JobOfferService jobOfferService,
-            CacheUtilService cacheUtilService) {
+            CacheUtilService cacheUtilService, KafkaEventPublisher kafkaEventPublisher) {
         this.jobApplicationRepository = jobApplicationRepository;
         this.jobOfferService = jobOfferService;
         this.cacheUtilService = cacheUtilService;
+        this.kafkaEventPublisher = kafkaEventPublisher;
     }
 
     @PostConstruct
@@ -69,7 +74,9 @@ public class JobApplicationServiceImpl implements JobApplicationService {
                 position,
                 Status.APPLIED,
                 jobId);
-        return jobApplicationRepository.save(application);
+        JobApplication saved = jobApplicationRepository.save(application);
+        publishApplicationCreatedEvent(saved, "api");
+        return saved;
     }
 
     @Override
@@ -99,7 +106,9 @@ public class JobApplicationServiceImpl implements JobApplicationService {
             app.setDateRejected(LocalDate.now());
         }
 
-        return jobApplicationRepository.save(app);
+        JobApplication saved = jobApplicationRepository.save(app);
+        publishApplicationStatusChangedEvent(saved, current, newStatus, "api");
+        return saved;
     }
 
     @Override
@@ -122,6 +131,12 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Transactional
     @Override
     public JobApplication update(Long id, JobApplication updateJobApplication) {
+        Optional<JobApplication> existingApplication = Optional.ofNullable(jobApplicationRepository.findById(id))
+                .orElse(Optional.empty());
+        Status previousStatus = existingApplication
+                .map(JobApplication::getStatus)
+                .orElse(null);
+
         List<JobOffer> applicationOffers = jobOfferService.findByApplicationId(id);
 
         if (updateJobApplication.getStatus() == Status.REJECTED) {
@@ -147,7 +162,9 @@ public class JobApplicationServiceImpl implements JobApplicationService {
             updateJobApplication.getOffers().forEach(offer -> offer.setApplication(updateJobApplication));
         }
 
-        return jobApplicationRepository.save(updateJobApplication);
+        JobApplication saved = jobApplicationRepository.save(updateJobApplication);
+        publishApplicationUpdatedEvent(saved, previousStatus, saved.getStatus(), "api");
+        return saved;
     }
 
     @Override
@@ -234,5 +251,40 @@ public class JobApplicationServiceImpl implements JobApplicationService {
     @Override
     public Page<JobApplication> listAll(Pageable pageable) {
         return jobApplicationRepository.findAll(pageable);
+    }
+
+    private void publishApplicationCreatedEvent(JobApplication app, String source) {
+        JobAppEvent event = JobAppEvent.newEvent(EventType.APPLICATION_CREATED);
+        event.setApplicationId(app.getId());
+        event.setJobId(app.getJobId());
+        event.setCandidateId(app.getCandidate() != null ? app.getCandidate().getId() : null);
+        event.setCompanyId(app.getCompany() != null ? app.getCompany().getId() : null);
+        event.setNewStatus(app.getStatus() != null ? app.getStatus().name() : null);
+        event.setSource(source);
+        kafkaEventPublisher.publishApplicationEvent(event);
+    }
+
+    private void publishApplicationStatusChangedEvent(JobApplication app, Status previousStatus, Status newStatus, String source) {
+        JobAppEvent event = JobAppEvent.newEvent(EventType.APPLICATION_STATUS_CHANGED);
+        event.setApplicationId(app.getId());
+        event.setJobId(app.getJobId());
+        event.setCandidateId(app.getCandidate() != null ? app.getCandidate().getId() : null);
+        event.setCompanyId(app.getCompany() != null ? app.getCompany().getId() : null);
+        event.setPreviousStatus(previousStatus != null ? previousStatus.name() : null);
+        event.setNewStatus(newStatus != null ? newStatus.name() : null);
+        event.setSource(source);
+        kafkaEventPublisher.publishApplicationEvent(event);
+    }
+
+    private void publishApplicationUpdatedEvent(JobApplication app, Status previousStatus, Status newStatus, String source) {
+        JobAppEvent event = JobAppEvent.newEvent(EventType.APPLICATION_UPDATED);
+        event.setApplicationId(app.getId());
+        event.setJobId(app.getJobId());
+        event.setCandidateId(app.getCandidate() != null ? app.getCandidate().getId() : null);
+        event.setCompanyId(app.getCompany() != null ? app.getCompany().getId() : null);
+        event.setPreviousStatus(previousStatus != null ? previousStatus.name() : null);
+        event.setNewStatus(newStatus != null ? newStatus.name() : null);
+        event.setSource(source);
+        kafkaEventPublisher.publishApplicationEvent(event);
     }
 }

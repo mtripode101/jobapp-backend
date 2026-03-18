@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.mtripode.jobapp.service.cache.CacheUtilService;
+import com.mtripode.jobapp.service.event.KafkaEventPublisher;
 import com.mtripode.jobapp.service.model.Candidate;
 import com.mtripode.jobapp.service.model.Company;
 import com.mtripode.jobapp.service.model.Interview;
@@ -54,13 +55,20 @@ class JobApplicationServiceImplTest {
     @Mock
     private Cache cache;
 
+    @Mock
+    private KafkaEventPublisher kafkaEventPublisher;
+
     private JobApplicationServiceImpl service;
     private CacheUtilService cacheUtilService;
 
     @BeforeEach
     void setUp() {
         cacheUtilService = new CacheUtilService(cacheManager);
-        service = new JobApplicationServiceImpl(jobApplicationRepository, jobOfferService, cacheUtilService);
+        service = new JobApplicationServiceImpl(
+                jobApplicationRepository,
+                jobOfferService,
+                cacheUtilService,
+                kafkaEventPublisher);
         lenient().when(jobApplicationRepository.save(any(JobApplication.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
     }
