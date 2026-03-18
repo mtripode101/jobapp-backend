@@ -36,6 +36,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: "jobappPass123"
       SPRING_REDIS_HOST: "jobapp-redis-dev"
       SPRING_REDIS_PORT: "6379"
+      NOTE_SERVICE_URL: "http://jobapp-mongodb-backend:8080/notes"
       SPRING_PROFILES_ACTIVE: "dev"
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
