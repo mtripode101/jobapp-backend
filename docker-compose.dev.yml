@@ -1,3 +1,5 @@
+name: jobapp-backend-dev
+
 version: "3.8"
 
 services:
@@ -44,7 +46,7 @@ services:
       - "5005:5005"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health > /dev/null || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5

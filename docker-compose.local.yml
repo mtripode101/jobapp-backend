@@ -1,3 +1,5 @@
+name: jobapp-backend-local
+
 services:
   db:
     image: mysql:8.0
@@ -18,7 +20,10 @@ services:
       timeout: 10s
       retries: 20
     networks:
-      - jobapp-net-local
+      jobapp-net-local:
+        aliases:
+          - db
+          - jobapp-mysql-local
 
   redis:
     image: redis:6-alpine
@@ -34,7 +39,10 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - jobapp-net-local
+      jobapp-net-local:
+        aliases:
+          - redis
+          - jobapp-redis-local
 
   backend:
     build:
@@ -60,12 +68,15 @@ services:
       - "8090:8080"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health > /dev/null || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5
     networks:
-      - jobapp-net-local
+      jobapp-net-local:
+        aliases:
+          - backend
+          - jobapp-backend-local
 
 volumes:
   db_data:
